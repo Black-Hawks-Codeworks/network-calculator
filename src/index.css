@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  --main-font: 'Poppins', sans-serif;
+  --main-color: #e47a11;
+  --secondary-color: #131517;
+  --accent-color: #ece7e7;
+
+  --main-text-color: #1a202c;
+  --secondary-text-color: #4a5568;
+}
+
+/* ===== GLOBAL RESET & BASE STYLES ===== */
+/* Box-sizing border-box for all elements */
+* {
+  box-sizing: border-box;
+  font-family: var(--main-font);
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  color: var(--main-text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+p {
+  margin: 0;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

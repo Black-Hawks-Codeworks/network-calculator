@@ -1,0 +1,11 @@
+.test-class {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.kokkina-grammata {
+  color: var(--main-color);
+}
