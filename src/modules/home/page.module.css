@@ -1,43 +1,28 @@
-.container {
-  /* display: flex;
-  flex-direction: column;
+.page {
+  display: flex;
+  background-color: hsl(224, 58%, 85%); 
+  font-family:'Times New Roman', Times, serif;
   justify-content: center;
-  align-items: center; */
-  height: 100vh;
-  width: 100vw;
-  background-color: #f0f0f0;
-  display: flex;
-  flex-direction: column;
 }
 
-.paragraph {
-  background-color: red;
-  flex-grow: 0.2;
+.descriptionBox {
+  background-color: hsl(0, 0%, 100%);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 80vw; /*vw → ποσοστό του πλάτους της οθόνης*/
+  box-shadow: 3px 3px 5px;
 }
 
-.content {
-  background-color: blue;
-  flex-grow: 1;
-  flex-direction: row;
-  display: flex;
+.title {
+  text-align: center;
+  color: hsl(226, 100%, 6%);
+  padding: 10px 10px;
+  margin-bottom: 20px;
 }
 
-.form {
-  background-color: green;
-  flex-grow: 0.5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.form form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 400px;
-}
-
-.networkCalculator {
-  background-color: yellow;
-  flex-grow: 0.5;
+.text {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: hsl(215, 14%, 34%);
 }
