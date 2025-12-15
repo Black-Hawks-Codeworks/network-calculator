@@ -1,6 +1,7 @@
 import styles from './calculator-input.module.css';
 
-export default function CalculatorInput({ id, label }) {
+export default function CalculatorInput(props) {
+  const { id, label, value, onChange } = props;
   return (
     <div className={styles.fieldRow}>
       <label htmlFor={id} className={styles.fieldLabel}>
@@ -10,8 +11,10 @@ export default function CalculatorInput({ id, label }) {
       <input
         id={id}
         className={styles.fieldInput}
-        type="number"
-        placeholder="Enter value"
+        type='number'
+        placeholder='Enter value'
+        value={value}
+        onChange={onChange}
       />
     </div>
   );

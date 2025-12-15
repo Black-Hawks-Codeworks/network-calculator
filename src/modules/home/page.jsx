@@ -1,7 +1,42 @@
+import { useState } from 'react';
 import CalculatorInput from './components/calculator-input';
 import styles from './page.module.css';
 
 export default function HomePage() {
+  const [frontendCpu, setFrontendCpu] = useState(0);
+  const [frontendMemory, setFrontendMemory] = useState(0);
+  const [backendCpu, setBackendCpu] = useState(0);
+  const [backendMemory, setBackendMemory] = useState(0);
+  const [dbCpu, setDbCpu] = useState(0);
+  const [dbMemory, setDbMemory] = useState(0);
+
+  const handleFrontendCpuChange = (event) => {
+    setFrontendCpu(event.target.value);
+  };
+
+  const handleFrontendMemoryChange = (event) => {
+    setFrontendMemory(event.target.value);
+  };
+
+  const handleBackendCpuChange = (event) => {
+    setBackendCpu(event.target.value);
+  };
+
+  const handleBackendMemoryChange = (event) => {
+    setBackendMemory(event.target.value);
+  };
+
+  const handleDbCpuChange = (event) => {
+    setDbCpu(event.target.value);
+  };
+
+  const handleDbMemoryChange = (event) => {
+    setDbMemory(event.target.value);
+  };
+
+  const handleCalculate = () => {
+    console.log('Calculate');
+  };
   return (
     <div className={styles.page}>
       {/* ΠΛΑΙΣΙΟ ΠΕΡΙΓΡΑΦΗΣ */}
@@ -26,28 +61,50 @@ export default function HomePage() {
             {/* FRONTEND */}
             <div className={styles.group}>
               <h3 className={styles.groupTitle}>Frontend</h3>
-              <CalculatorInput id='frontendInput1' label='Frontend Input 1' />
-              <CalculatorInput id='frontendInput2' label='Frontend Input 2' />
+              <CalculatorInput
+                id='frontendCpu'
+                label='Frontend CPU'
+                value={frontendCpu}
+                onChange={handleFrontendCpuChange}
+              />
+              <CalculatorInput
+                id='frontendMemory'
+                label='Frontend Memory'
+                value={frontendMemory}
+                onChange={handleFrontendMemoryChange}
+              />
             </div>
 
             {/* BACKEND */}
             <div className={styles.group}>
               <h3 className={styles.groupTitle}>Backend</h3>
 
-              <CalculatorInput id='backendInput1' label='Backend Input 1' />
-              <CalculatorInput id='backendInput2' label='Backend Input 2' />
+              <CalculatorInput
+                id='backendCpu'
+                label='Backend CPU'
+                value={backendCpu}
+                onChange={handleBackendCpuChange}
+              />
+              <CalculatorInput
+                id='backendMemory'
+                label='Backend Memory'
+                value={backendMemory}
+                onChange={handleBackendMemoryChange}
+              />
             </div>
 
             {/* DATABASE */}
             <div className={styles.group}>
               <h3 className={styles.groupTitle}>Database</h3>
 
-              <CalculatorInput id='dbInput1' label='Database Input 1' />
-              <CalculatorInput id='dbInput2' label='Database Input 2' />
+              <CalculatorInput id='dbCpu' label='Database CPU' value={dbCpu} onChange={handleDbCpuChange} />
+              <CalculatorInput id='dbMemory' label='Database Memory' value={dbMemory} onChange={handleDbMemoryChange} />
             </div>
           </div>
 
-          <button className={styles.calculateButton}>CALCULATE</button>
+          <button className={styles.calculateButton} onClick={handleCalculate}>
+            CALCULATE
+          </button>
         </section>
 
         <section className={styles.outputBox}>{/*εδώ θα εμφανίζονται οι κόμβοι μετά τον υπολογισμό*/}</section>
