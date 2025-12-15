@@ -1,0 +1,17 @@
+.fieldRow {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}   
+
+.fieldLabel {
+  font-size: 13px;
+}
+
+.fieldInput {
+  padding: 10px 23px;
+  border-radius: 5px;
+  border: 1px solid hsl(218, 11%, 65%);
+  font-size: 8px;
+}
+

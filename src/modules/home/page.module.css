@@ -93,19 +93,6 @@
   text-align: center;
 }
 
-/* Κάθε label και input */
-
-.fieldLabel {
-  font-size: 13px;
-}
-
-.fieldInput {
-  padding: 8px 10px;
-  border-radius: 5px;
-  border: 1px solid hsl(218, 11%, 65%);
-  font-size: 10px;
-}
-
 /* Κουμπί CALCULATE */
 .calculateButton {
   margin-top: 15px;
