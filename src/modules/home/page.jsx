@@ -2,7 +2,8 @@ import styles from './page.module.css';
 
 export default function HomePage() {
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
+      {/* ΠΛΑΙΣΙΟ ΠΕΡΙΓΡΑΦΗΣ */}
       <section className={styles.descriptionBox}>
         <h1 className={styles.title}>Network Calculator</h1>
         <p className={styles.text}>
@@ -14,6 +15,66 @@ export default function HomePage() {
           visual understanding of how much capacity your system needs under different conditions.
         </p>
       </section>
-    </main>
+
+      <div className={styles.contentRow}>
+        {/* ΦΟΡΜΑ */}
+        <section className={styles.formCard}>
+          <h2 className={styles.formTitle}>Form</h2>
+
+          <div className={styles.formInner}>
+            {/* FRONTEND */}
+            <div className={styles.group}>
+              <h3 className={styles.groupTitle}>Frontend</h3>
+
+              <label className={styles.field}>
+                <span className={styles.fieldLabel}>Frontend Input 1</span>
+                <input className={styles.fieldInput} type='number' placeholder='Enter value' />
+              </label>
+
+              <label className={styles.field}>
+                <span className={styles.fieldLabel}>Frontend Input 2</span>
+                <input className={styles.fieldInput} type='number' placeholder='Enter value' />
+              </label>
+            </div>
+
+            {/* BACKEND */}
+            <div className={styles.group}>
+              <h3 className={styles.groupTitle}>Backend</h3>
+
+              <label className={styles.field}>
+                <span className={styles.fieldLabel}>Backend Input 1</span>
+                <input className={styles.fieldInput} type='number' placeholder='Enter value' />
+              </label>
+
+              <label className={styles.field}>
+                <span className={styles.fieldLabel}>Backend Input 2</span>
+                <input className={styles.fieldInput} type='number' placeholder='Enter value' />
+              </label>
+            </div>
+
+            {/* DATABASE */}
+            <div className={styles.group}>
+              <h3 className={styles.groupTitle}>Database</h3>
+
+              <label className={styles.field}>
+                <span className={styles.fieldLabel}>Database Input 1</span>
+                <input className={styles.fieldInput} type='number' placeholder='Enter value' />
+              </label>
+
+              <label className={styles.field}>
+                <span className={styles.fieldLabel}>Database Input 2</span>
+                <input className={styles.fieldInput} type='number' placeholder='Enter value' />
+              </label>
+            </div>
+          </div>
+
+          <button className={styles.calculateButton}>CALCULATE</button>
+        </section>
+
+        <section className={styles.outputBox}>
+          {/*εδώ θα εμφανίζονται οι κόμβοι μετά τον υπολογισμό*/}
+        </section>
+      </div>
+    </div>
   );
 }
