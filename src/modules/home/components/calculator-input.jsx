@@ -13,7 +13,7 @@ export default function CalculatorInput(props) {
         className={styles.fieldInput}
         type='number'
         placeholder='Enter value'
-        value={value}
+        value={value === 0 ? '' : value}
         onChange={onChange}
       />
     </div>

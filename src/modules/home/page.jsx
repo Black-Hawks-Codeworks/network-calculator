@@ -3,39 +3,32 @@ import CalculatorInput from './components/calculator-input';
 import styles from './page.module.css';
 
 export default function HomePage() {
-  const [frontendCpu, setFrontendCpu] = useState(0);
-  const [frontendMemory, setFrontendMemory] = useState(0);
-  const [backendCpu, setBackendCpu] = useState(0);
-  const [backendMemory, setBackendMemory] = useState(0);
-  const [dbCpu, setDbCpu] = useState(0);
-  const [dbMemory, setDbMemory] = useState(0);
+  const [requiredResources, setRequiredResources] = useState({
+    //arhikes times gia kathe input
+    frontendCpu: 0,
+    frontendMemory: 0,
+    backendCpu: 0,
+    backendMemory: 0,
+    dbCpu: 0,
+    dbMemory: 0,
+  });
 
-  const handleFrontendCpuChange = (event) => {
-    setFrontendCpu(event.target.value);
+  //otan i timi sto input allazei, diladi onChange...
+  //vale sto analogo id to value apo to input
+  //metetrpse to se arithmo giati to value ton input einai PANTA string
+  const handleChange = (event) => {
+    const { id, value } = event.target;
+    setRequiredResources((prevState) => ({
+      ...prevState,
+      [id]: Number(value),
+    }));
   };
 
-  const handleFrontendMemoryChange = (event) => {
-    setFrontendMemory(event.target.value);
-  };
-
-  const handleBackendCpuChange = (event) => {
-    setBackendCpu(event.target.value);
-  };
-
-  const handleBackendMemoryChange = (event) => {
-    setBackendMemory(event.target.value);
-  };
-
-  const handleDbCpuChange = (event) => {
-    setDbCpu(event.target.value);
-  };
-
-  const handleDbMemoryChange = (event) => {
-    setDbMemory(event.target.value);
-  };
-
+  //grapse mesa sta inputs merika numera kai pata to calculate
+  //des ti vgazei stin consola
   const handleCalculate = () => {
-    console.log('Calculate');
+    // edo mesa tha boun ta calculations apo tis diafaneies to Papadimitriou
+    console.log('Calculate, for now it just logs the state', requiredResources);
   };
   return (
     <div className={styles.page}>
@@ -64,14 +57,14 @@ export default function HomePage() {
               <CalculatorInput
                 id='frontendCpu'
                 label='Frontend CPU'
-                value={frontendCpu}
-                onChange={handleFrontendCpuChange}
+                value={requiredResources.frontendCpu}
+                onChange={handleChange}
               />
               <CalculatorInput
                 id='frontendMemory'
                 label='Frontend Memory'
-                value={frontendMemory}
-                onChange={handleFrontendMemoryChange}
+                value={requiredResources.frontendMemory}
+                onChange={handleChange}
               />
             </div>
 
@@ -82,14 +75,14 @@ export default function HomePage() {
               <CalculatorInput
                 id='backendCpu'
                 label='Backend CPU'
-                value={backendCpu}
-                onChange={handleBackendCpuChange}
+                value={requiredResources.backendCpu}
+                onChange={handleChange}
               />
               <CalculatorInput
                 id='backendMemory'
                 label='Backend Memory'
-                value={backendMemory}
-                onChange={handleBackendMemoryChange}
+                value={requiredResources.backendMemory}
+                onChange={handleChange}
               />
             </div>
 
@@ -97,8 +90,18 @@ export default function HomePage() {
             <div className={styles.group}>
               <h3 className={styles.groupTitle}>Database</h3>
 
-              <CalculatorInput id='dbCpu' label='Database CPU' value={dbCpu} onChange={handleDbCpuChange} />
-              <CalculatorInput id='dbMemory' label='Database Memory' value={dbMemory} onChange={handleDbMemoryChange} />
+              <CalculatorInput
+                id='dbCpu'
+                label='Database CPU'
+                value={requiredResources.dbCpu}
+                onChange={handleChange}
+              />
+              <CalculatorInput
+                id='dbMemory'
+                label='Database Memory'
+                value={requiredResources.dbMemory}
+                onChange={handleChange}
+              />
             </div>
           </div>
 
