@@ -65,7 +65,7 @@ export default [
         ...globals.jest,
         google: 'readonly',
       },
-      ecmaVersion: 6,
+      ecmaVersion: 'latest',
       sourceType: 'module',
       parserOptions: {
         ecmaFeatures: {

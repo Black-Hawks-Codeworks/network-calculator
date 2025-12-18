@@ -1,6 +1,6 @@
 import { createBrowserRouter, redirect } from 'react-router-dom';
 
-import HomePage from '@/home/page';
+import HomePage from '@/modules/home/page';
 import Layout from '@/shared/layout';
 
 export const createRouter = () => {
