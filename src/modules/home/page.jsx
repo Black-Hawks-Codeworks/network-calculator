@@ -36,12 +36,13 @@ export default function HomePage() {
       <section className={styles.descriptionBox}>
         <h2 className={styles.title}>Network Calculator</h2>
         <p className={styles.text}>
-          The Network Calculator is a simple tool that helps you estimate how many system resources you need based on
-          user input. It takes values related to frontend, backend, and database load, and calculates how many instances
-          (nodes) are required for each part of the system. After you press Calculate, the tool visually displays the
-          required nodes as green circles on the right side of the page. Each node represents one instance needed for
-          the workload you entered. This tool is designed to give a quick, visual understanding of how much capacity
-          your system needs under different conditions.
+          The Network Calculator helps you optimize VM placement across physical nodes using a greedy algorithm with
+          cosine similarity. Add VMs for each tier (frontend, backend, database) by specifying their CPU and memory
+          requirements. The tool automatically assigns VMs to nodes, minimizing waste and maximizing resource
+          utilization. The cosine similarity metric ensures that VMs are placed on nodes where their resource
+          requirements best match the available capacity, preventing scenarios where CPU is wasted due to memory
+          constraints. Green circles represent nodes, and each shows which VMs are assigned to it along
+          with the similarity score.
         </p>
       </section>
 
