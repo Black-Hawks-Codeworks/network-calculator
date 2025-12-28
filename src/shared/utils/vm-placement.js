@@ -22,6 +22,13 @@ export function placeVMs(vms, nodeCapacity) {
   const nodes = [];
 
   for (const vm of sortedVms) {
+    // edge case: an ena VM den xwraei oute se adeio node, den ginetai placement
+    // giati: an cpu > capacity.cpu h memory > capacity.memory, tote tha vgoun arnhtika remaining
+    if (vm.cpu > nodeCapacity.cpu || vm.memory > nodeCapacity.memory) {
+      throw new Error(
+        `VM ${vm.id} does not fit in an empty node (VM: ${vm.cpu}/${vm.memory}, node: ${nodeCapacity.cpu}/${nodeCapacity.memory})`
+      );
+    }
     // track variables initialization
 
     let bestNode = null;
@@ -30,7 +37,7 @@ export function placeVMs(vms, nodeCapacity) {
     // check se kathe node gia to an xwrane ta req's sta prosferomena apo to vm resources.
 
     for (const node of nodes) {
-      const canFit = node.availableCpu >= vm.cpu && node.availableMemory >= vm.availableMemory;
+      const canFit = node.availableCpu >= vm.cpu && node.availableMemory >= vm.memory;
 
       if (!canFit) continue; // an den xwraei skipparw kai sunexizw search
 
@@ -45,26 +52,38 @@ export function placeVMs(vms, nodeCapacity) {
         bestSimilarity = similarity;
         bestNode = node;
       }
+    }
+    // placement
 
-      // placement
+    if (bestNode) {
+      // placement Similarity = s_u^i opws sto slide (requested vs available)
+      const placedVm = { ...vm, placementSimilarity: bestSimilarity };
 
-      if (bestNode) {
-        // an brethike node pou xwraei, prosthetw ekei kai afairw ta diathesima resources
-        bestNode.vms.push(vm);
-        bestNode.availableCpu -= vm.cpu;
-        bestNode.availableMemory -= vm.memory;
-        bestNode.totalSimilarity += bestSimilarity;
-        bestNode.similarity = bestNode.totalSimilarity / bestNode.vms.length;
-      } else { // den xwraei poythena / dhmiourgei neo node
-        nodes.push({
-          nodeId: nodes.length + 1,
-          vms: [vm],
-          availableCpu: nodeCapacity.cpu - vm.cpu,
-          availableMemory: nodeCapacity.memory - vm.memory,
-          totalSimilarity: 1.0, // prwto VM = perfect fit
-          similarity: 1.0,
-        });
-      }
+      bestNode.vms.push(placedVm);
+      bestNode.availableCpu -= vm.cpu;
+      bestNode.availableMemory -= vm.memory;
+
+      bestNode.totalSimilarity += bestSimilarity;
+      // average similarity gia oloklhro node (summary metric)
+      bestNode.similarity = bestNode.totalSimilarity / bestNode.vms.length;
+    } else {
+      // den xwraei poythena / dhmiourgei neo node
+      const vmVector = [vm.cpu, vm.memory];
+      const capacityVector = [nodeCapacity.cpu, nodeCapacity.memory];
+      // s_u^i gia neo node = similarity(requested, available=capacity)
+      const firstSimilarity = cosineSimilarity(vmVector, capacityVector);
+
+      // apothikeuw to per-VM similarity mesa sto VM
+      const placedVm = { ...vm, placementSimilarity: firstSimilarity };
+
+      nodes.push({
+        nodeId: nodes.length + 1,
+        vms: [placedVm],
+        availableCpu: nodeCapacity.cpu - vm.cpu,
+        availableMemory: nodeCapacity.memory - vm.memory,
+        totalSimilarity: firstSimilarity,
+        similarity: firstSimilarity,
+      });
     }
   }
   return nodes;

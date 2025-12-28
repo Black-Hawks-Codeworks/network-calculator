@@ -1,7 +1,7 @@
 // Cosine Similartity Calculator
 
 // Metraei poso paromoia einai duo dianusmata. px an duo belh(dianusmata) deixnoun sthn idia kateuthinsi tote exoun upsilo similarity.
-// pairnei times -1 ews 1 opou konta sto 1 megalo similarity , konta sto 0 mikro similarity, -1 katholou similarity
+// kanonika pairnei times -1 ews 1 emeis omws epeidh den tha exoume arnhtika resources, exoume pedio orismou cos(θ)Ε[0,1] opou konta sto 1 megalo similarity , konta sto 0 mikro similarity
 
 // cos(θ) = (A·B) / (||A|| × ||B||) -> to sunhmitono ths gwnias pou sxhmatizoun duo Dianusmata A & B.
 
