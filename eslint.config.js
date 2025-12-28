@@ -50,7 +50,7 @@ export default [
     )
   ),
   {
-    files: ['**/*.js', '**/*.jsx'],
+    files: ['**/*.{js,jsx,mjs,cjs}'],
     plugins: {
       react: fixupPluginRules(react),
       prettier,
@@ -79,10 +79,10 @@ export default [
         version: 'detect',
       },
 
-      'import/extensions': ['.js', '.jsx'],
+      'import/extensions': ['.js', '.jsx', '.mjs', '.cjs'],
       'import/resolver': {
         node: {
-          extensions: ['.js', '.jsx'],
+          extensions: ['.js', '.jsx', '.mjs', '.cjs'],
         },
         alias: {
           // Allow ESLint to recognize Vite imports and path aliases.
@@ -90,7 +90,7 @@ export default [
             ['@', './src'],
             ['', './public'],
           ],
-          extensions: ['.js', '.jsx'],
+          extensions: ['.js', '.jsx', '.mjs', '.cjs'],
         },
       },
     },
@@ -188,6 +188,8 @@ export default [
         {
           js: 'never',
           jsx: 'never',
+          mjs: 'never',
+          cjs: 'never',
         },
       ],
 
@@ -223,6 +225,15 @@ export default [
       sourceType: 'module',
     },
     rules: {
+      'import/no-unresolved': 'off',
+    },
+  },
+  {
+    files: ['scripts/**/*.{js,mjs,cjs}'],
+    rules: {
+      // Node ESM scripts need fully specified imports (e.g. .js extension).
+      // These rules are tuned for Vite/browser code, so we relax them here.
+      'import/extensions': 'off',
       'import/no-unresolved': 'off',
     },
   },
