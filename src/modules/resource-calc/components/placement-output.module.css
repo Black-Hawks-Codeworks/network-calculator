@@ -1,0 +1,106 @@
+.wrapper {
+  display: grid;
+  gap: 18px;
+}
+
+.tierSection {
+  display: grid;
+  gap: 10px;
+}
+
+.tierTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.empty {
+  color: #666;
+  font-size: 14px;
+}
+
+.nodesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.nodeCard {
+  border: 1px solid #e1e5ea;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+}
+
+.nodeHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.nodeCircle {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #4caf50;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.nodeMeta {
+  display: grid;
+  gap: 2px;
+}
+
+.nodeTitle {
+  font-weight: 900;
+}
+
+.nodeSub {
+  font-size: 13px;
+  color: #555;
+}
+
+.vmList {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.vmItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f3f6ff;
+  border: 1px solid #dbe4ff;
+  border-radius: 10px;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.remaining {
+  font-size: 13px;
+  color: #555;
+}
+
+.vmSim {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 800;
+  color: #555;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 22px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  border: 1px solid #dbe4ff;
+  font-size: 12px;
+  font-weight: 900;
+  color: #243b7a;
+}

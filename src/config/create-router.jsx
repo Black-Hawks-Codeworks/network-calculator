@@ -1,6 +1,7 @@
 import { createBrowserRouter, redirect } from 'react-router-dom';
 
-import HomePage from '@/modules/home/page';
+import ResourceCalcPage from '@/modules/resource-calc/resource-calc-page';
+import GraphPlacementPage from '@/modules/graph-placement/graph-placement-page';
 import Layout from '@/shared/layout';
 
 export const createRouter = () => {
@@ -10,19 +11,25 @@ export const createRouter = () => {
       element: <Layout />,
       children: [
         {
-          path: '/',
-          element: <HomePage />,
+          index: true,
+          loader() {
+            return redirect('/resource-calc');
+          },
         },
         {
-          path: '/dashboard',
-          element: <div>Dashboard Page</div>,
+          path: 'resource-calc',
+          element: <ResourceCalcPage />,
+        },
+        {
+          path: 'graph-placement',
+          element: <GraphPlacementPage />,
         },
       ],
     },
     {
       path: '*',
       loader() {
-        return redirect('/');
+        return redirect('/resource-calc');
       },
     },
   ]);
