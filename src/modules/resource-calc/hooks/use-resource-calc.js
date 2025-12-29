@@ -36,6 +36,7 @@ export default function useResourceCalc() {
     console.log('clicked');
     console.log('requiredResources:', requiredResources);
 
+    //TODO: an iparhei hroinos na min einai hardcoded auto...
     const nodeCapacity = { cpu: 20, memory: 32 };
     const frontendVms = [
       {
@@ -76,5 +77,6 @@ export default function useResourceCalc() {
     handleChange,
     handleCalculate,
     placement,
+    requiredResources,
   };
 }
