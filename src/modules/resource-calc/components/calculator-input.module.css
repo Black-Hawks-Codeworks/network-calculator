@@ -1,16 +1,44 @@
 .fieldRow {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 .fieldLabel {
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  color: hsl(215, 28%, 17%);
 }
 
 .fieldInput {
-  padding: 10px 23px;
-  border-radius: 5px;
-  border: 1px solid hsl(218, 11%, 65%);
-  font-size: 8px;
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px;
+
+  border: 1px solid hsl(213, 27%, 84%); 
+  border-radius: 6px;
+  background: hsl(0, 0%, 100%);
+
+  font-size: 14px;
+  color: hsl(221, 39%, 11%);
+  box-sizing: border-box;
+
+  outline: none;
+}
+
+.fieldInput::placeholder {
+  color: hsl(218, 11%, 65%);
+  text-align: center;
+}
+
+/* Για να μείνει centered και όταν γράφει ο χρήστης*/
+.fieldInput {
+  text-align: center;
+}
+
+/* ωραίο focus */
+.fieldInput:focus {
+  border-color: hsl(212, 96%, 78%);
+  box-shadow: 0 0 0 3px hsla(212, 96%, 78%, 0.35);
 }

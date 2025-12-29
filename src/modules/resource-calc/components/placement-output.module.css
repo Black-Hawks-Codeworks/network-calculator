@@ -1,106 +1,112 @@
 .wrapper {
-  display: grid;
-  gap: 18px;
-}
-
-.tierSection {
-  display: grid;
-  gap: 10px;
-}
-
-.tierTitle {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.empty {
-  color: #666;
-  font-size: 14px;
+  background: hsl(0, 0%, 100%);
+  border: 1px solid hsl(184, 56%, 90%);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 10px hsla(0, 0%, 0%, 0.10);
 }
 
 .nodesGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 8px;
 }
 
 .nodeCard {
-  border: 1px solid #e1e5ea;
-  border-radius: 12px;
-  padding: 12px;
-  background: #fff;
+  background: hsl(0, 0%, 100%);
+  border: 1px solid hsl(184, 56%, 88%);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 6px hsla(0, 0%, 0%, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .nodeHeader {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .nodeCircle {
-  width: 18px;
-  height: 18px;
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
-  background: #4caf50;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  background: hsl(140, 55%, 45%);
+  border: 1px solid hsl(140, 70%, 94%);
+  flex: 0 0 auto;
+  margin-top: 1px;
 }
 
-.nodeMeta {
-  display: grid;
+.nodeInfo {
+  display: flex;
+  flex-direction: column;
   gap: 2px;
 }
 
 .nodeTitle {
-  font-weight: 900;
+  font-size: 14px;
+  font-weight: 700;
+  color: hsl(220, 15%, 10%);
 }
 
 .nodeSub {
-  font-size: 13px;
-  color: #555;
+  font-size: 11px;
+  color: hsl(220, 10%, 35%);
 }
 
 .vmList {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .vmItem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: #f3f6ff;
-  border: 1px solid #dbe4ff;
-  border-radius: 10px;
-  padding: 8px;
-  font-size: 13px;
-}
-
-.remaining {
-  font-size: 13px;
-  color: #555;
-}
-
-.vmSim {
-  margin-left: auto;
-  font-size: 12px;
-  font-weight: 800;
-  color: #555;
+  gap: 6px;
+  background: hsl(215, 80%, 96%);
+  border: 1px solid hsl(215, 60%, 88%);
+  border-radius: 7px;
+  padding: 6px 8px;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
+  width: 22px;
   height: 22px;
-  margin-right: 8px;
   border-radius: 999px;
-  background: #eef2ff;
-  border: 1px solid #dbe4ff;
-  font-size: 12px;
-  font-weight: 900;
-  color: #243b7a;
+  background: hsl(215, 80%, 95%);
+  border: 1px solid hsl(215, 60%, 85%);
+  color: hsl(220, 50%, 28%);
+  font-size: 10px;
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
+.vmSim {
+  margin-left: auto;
+  font-weight: 700;
+  color: hsl(220, 15%, 25%);
+  font-size: 10px;
+}
+
+.remaining {
+  margin-top: 4px;
+  font-size: 10px;
+  color: hsl(220, 10%, 35%);
+}
+
+.empty {
+  color: hsl(220, 10%, 35%);
+  font-size: 11px;
+  padding: 6px;
+  background: hsl(190, 80%, 98%);
+  border: 1px dashed hsl(184, 56%, 85%);
+  border-radius: 7px;
 }
