@@ -4,3 +4,29 @@
   min-height: 100vh;
   /* background: linear-gradient(180deg, #e47a11ed, #ece7e7); */
 }
+
+.nav {
+  position: fixed;
+  top: 10%;
+  left: 0;
+  background-color: #f0f0f0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #000;
+  text-decoration: none;
+}
+
+.nav-link-selected {
+  color: #000;
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: #e47a11;
+  padding: 0px 8px;
+}
