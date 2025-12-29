@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import CalculatorInput from './components/calculator-input';
-import styles from './page.module.css';
+import styles from './resource-calc-page.module.css';
 import PlacementOutput from './components/placement-output';
 import { placeVMs } from '../../shared/utils/vm-placement';
 
-export default function HomePage() {
+export default function ResourceCalcPage() {
   const [requiredResources, setRequiredResources] = useState({
     //arhikes times gia kathe input
     frontendCpu: 0,
