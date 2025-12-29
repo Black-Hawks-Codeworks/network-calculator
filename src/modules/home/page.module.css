@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  background: hsl(224, 69%, 88%);      
+  background: hsl(224, 69%, 88%);
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -10,10 +10,9 @@
 
 .contentRow {
   display: flex;
-  flex-direction: row;   
-  gap: 40px;   /* κενό ανάμεσα σε φόρμα και output */
-  width: 100%;
-  max-width: 90vw;
+  flex-direction: row;
+  gap: 38px; /* κενό ανάμεσα σε φόρμα και output */
+  flex: 1 1 auto;
 }
 
 .descriptionBox {
@@ -36,12 +35,7 @@
   color: hsl(215, 14%, 34%);
 }
 
-
 .formCard {
-  margin-right: auto;
-  margin-left: 20px;
-  width: 40vw;
-
   border-radius: 16px;
   padding: 20px 20px 20px;
 
@@ -60,18 +54,22 @@
   text-align: center;
   color: hsl(226, 100%, 6%);
   margin: 0px;
-  font-style: Times New Roman, Times, serif;
+  font-style:
+    Times New Roman,
+    Times,
+    serif;
 }
 
 .formInner {
-  width: 100%;
-  border:hsl(222, 46%, 12%) 3px solid;
+  border: hsl(222, 46%, 12%) 3px solid;
   border-radius: 12px;
   padding: 10px 20px;
-  background: hsl(0, 0%, 100%);        
+  background: hsl(0, 0%, 100%);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
+  align-items: center;
+  flex: 1 1 auto;
   box-shadow: 3px 3px 5px;
 }
 
@@ -85,6 +83,12 @@
   flex-direction: column;
   gap: 5px;
   box-shadow: 3px 3px 5px;
+}
+
+.groupContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 .groupTitle {

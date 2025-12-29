@@ -68,8 +68,6 @@ export default function HomePage() {
     // giati: theloume na kanoume placement se koino pool nodes (mixed tiers)
     const allVms = [...frontendVms, ...backendVms, ...databaseVms];
 
-
-
     // ena placement run mono, gia na mporoun na "paketaristoun" mazi
     const nodes = placeVMs(allVms, nodeCapacity);
 
@@ -101,62 +99,64 @@ export default function HomePage() {
 
           <div className={styles.formInner}>
             {/* FRONTEND */}
-            <div className={styles.group}>
-              <h3 className={styles.groupTitle}>Frontend</h3>
-              <CalculatorInput
-                id='frontendCpu'
-                label='Frontend CPU'
-                value={requiredResources.frontendCpu}
-                onChange={handleChange}
-              />
-              <CalculatorInput
-                id='frontendMemory'
-                label='Frontend Memory'
-                value={requiredResources.frontendMemory}
-                onChange={handleChange}
-              />
+            <div className={styles.groupContainer}>
+              <div className={styles.group}>
+                <h3 className={styles.groupTitle}>Frontend</h3>
+                <CalculatorInput
+                  id='frontendCpu'
+                  label='Frontend CPU'
+                  value={requiredResources.frontendCpu}
+                  onChange={handleChange}
+                />
+                <CalculatorInput
+                  id='frontendMemory'
+                  label='Frontend Memory'
+                  value={requiredResources.frontendMemory}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* BACKEND */}
+              <div className={styles.group}>
+                <h3 className={styles.groupTitle}>Backend</h3>
+
+                <CalculatorInput
+                  id='backendCpu'
+                  label='Backend CPU'
+                  value={requiredResources.backendCpu}
+                  onChange={handleChange}
+                />
+                <CalculatorInput
+                  id='backendMemory'
+                  label='Backend Memory'
+                  value={requiredResources.backendMemory}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* DATABASE */}
+              <div className={styles.group}>
+                <h3 className={styles.groupTitle}>Database</h3>
+
+                <CalculatorInput
+                  id='dbCpu'
+                  label='Database CPU'
+                  value={requiredResources.dbCpu}
+                  onChange={handleChange}
+                />
+                <CalculatorInput
+                  id='dbMemory'
+                  label='Database Memory'
+                  value={requiredResources.dbMemory}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
 
-            {/* BACKEND */}
-            <div className={styles.group}>
-              <h3 className={styles.groupTitle}>Backend</h3>
-
-              <CalculatorInput
-                id='backendCpu'
-                label='Backend CPU'
-                value={requiredResources.backendCpu}
-                onChange={handleChange}
-              />
-              <CalculatorInput
-                id='backendMemory'
-                label='Backend Memory'
-                value={requiredResources.backendMemory}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* DATABASE */}
-            <div className={styles.group}>
-              <h3 className={styles.groupTitle}>Database</h3>
-
-              <CalculatorInput
-                id='dbCpu'
-                label='Database CPU'
-                value={requiredResources.dbCpu}
-                onChange={handleChange}
-              />
-              <CalculatorInput
-                id='dbMemory'
-                label='Database Memory'
-                value={requiredResources.dbMemory}
-                onChange={handleChange}
-              />
-            </div>
+            <button className={styles.calculateButton} onClick={handleCalculate}>
+              CALCULATE
+            </button>
           </div>
-
-          <button className={styles.calculateButton} onClick={handleCalculate}>
-            CALCULATE
-          </button>
         </section>
 
         <section className={styles.outputBox}>
