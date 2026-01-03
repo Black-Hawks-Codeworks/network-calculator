@@ -41,7 +41,7 @@ export default function useResourceCalc() {
     const frontendVms = [
       {
         id: 'frontend-vm-1',
-        tier: 'frontend', // gia output badge FE
+        role: 'frontend', // gia output badge FE
         cpu: requiredResources.frontendCpu,
         memory: requiredResources.frontendMemory,
       },
@@ -49,7 +49,7 @@ export default function useResourceCalc() {
     const backendVms = [
       {
         id: 'backend-vm-1',
-        tier: 'backend', // gia output badge BE
+        role: 'backend', // gia output badge BE
         cpu: requiredResources.backendCpu,
         memory: requiredResources.backendMemory,
       },
@@ -57,7 +57,7 @@ export default function useResourceCalc() {
     const databaseVms = [
       {
         id: 'database-vm-1',
-        tier: 'database', // gia output badge DB
+        role: 'database', // gia output badge DB
         cpu: requiredResources.dbCpu,
         memory: requiredResources.dbMemory,
       },
