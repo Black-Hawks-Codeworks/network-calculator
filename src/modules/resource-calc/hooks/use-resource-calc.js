@@ -14,9 +14,18 @@ export default function useResourceCalc() {
 
   // placement state: krataei ENA koino result nodes (mixed vms)
   // giati: sto real VM placement ola ta vms (FE/BE/DB) einai sto idio physical cluster
-  const [placement, setPlacement] = useState({
-    nodes: [],
-  });
+  const [placement, setPlacement] = useState({ nodes: [] });
+
+  const resetInputs = () => {
+    setRequiredResources({
+      frontendCpu: 0,
+      frontendMemory: 0,
+      backendCpu: 0,
+      backendMemory: 0,
+      dbCpu: 0,
+      dbMemory: 0,
+    });
+  };
 
   //otan i timi sto input allazei, diladi onChange...
   //vale sto analogo id to value apo to input
@@ -35,6 +44,15 @@ export default function useResourceCalc() {
     // edo mesa tha boun ta calculations apo tis diafaneies to Papadimitriou  const nodeCapacity = { cpu: 10, memory: 20 };
     console.log('clicked');
     console.log('requiredResources:', requiredResources);
+
+    const values = Object.values(requiredResources);
+
+    if (values.some((v) => v < 0)) {
+      window.alert('Please enter non-negative values only.');
+      resetInputs();
+      setPlacement({ nodes: [] });
+      return;
+    }
 
     //TODO: an iparhei hroinos na min einai hardcoded auto...
     const nodeCapacity = { cpu: 20, memory: 32 };
@@ -72,6 +90,7 @@ export default function useResourceCalc() {
     console.log('nodes result:', nodes);
     // apothikeuw to apotelesma
     setPlacement({ nodes });
+
   };
   return {
     handleChange,
@@ -80,3 +99,35 @@ export default function useResourceCalc() {
     requiredResources,
   };
 }
+{/*
+          .      .
+     ...  :..':
+      : ````.'    :''::'
+    ..:..  :      .'' :
+.     :     .'      :
+     :     :    :          :
+      :    :    :            :
+      :     :    :          :
+        :     :    :..''''``::.
+         : ...:..'      .''
+         .'    .'  .::::'
+        :..'''``:::::::
+        '            ::::
+                        ::.
+                         ::
+                          :::.
+            ..:`.:'`. ::'`.
+         ..'        `:.: ::
+        .:          .::::
+        .:     ..''      :::
+         : .''            .::
+          :             .'`::
+                              ::
+                              ::
+                                :
+                                :
+                                :
+                                :
+                                .
+
+*/}
