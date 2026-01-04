@@ -54,8 +54,31 @@ export default function useResourceCalc() {
       return;
     }
 
-    //TODO: an iparhei hroinos na min einai hardcoded auto...
     const nodeCapacity = { cpu: 20, memory: 32 };
+
+    if (
+      requiredResources.frontendCpu > nodeCapacity.cpu ||
+      requiredResources.backendCpu > nodeCapacity.cpu ||
+      requiredResources.dbCpu > nodeCapacity.cpu
+    ) {
+      window.alert(`CPU value is too large (max ${nodeCapacity.cpu}).`);
+      resetInputs();
+      setPlacement({ nodes: [] });
+      return;
+    }
+
+    if (
+      requiredResources.frontendMemory > nodeCapacity.memory ||
+      requiredResources.backendMemory > nodeCapacity.memory ||
+      requiredResources.dbMemory > nodeCapacity.memory
+    ) {
+      window.alert(`Memory value is too large (max ${nodeCapacity.memory}).`);
+      resetInputs();
+      setPlacement({ nodes: [] });
+      return;
+    }
+
+    //TODO: an iparhei hroinos na min einai hardcoded auto...
     const frontendVms = [
       {
         id: 'frontend-vm-1',
@@ -90,7 +113,6 @@ export default function useResourceCalc() {
     console.log('nodes result:', nodes);
     // apothikeuw to apotelesma
     setPlacement({ nodes });
-
   };
   return {
     handleChange,
@@ -99,7 +121,8 @@ export default function useResourceCalc() {
     requiredResources,
   };
 }
-{/*
+
+  /*
           .      .
      ...  :..':
       : ````.'    :''::'
@@ -130,4 +153,4 @@ export default function useResourceCalc() {
                                 :
                                 .
 
-*/}
+*/
