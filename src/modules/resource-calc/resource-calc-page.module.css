@@ -112,14 +112,3 @@
   box-shadow: 3px 3px 5px hsla(220, 36%, 71%, 0.5);
   background: hsl(0, 0%, 100%);
 }
-.gifUnderNodes{
-  margin-top: 14px;
-  display: flex;
-  justify-content: center;
-}
-.bigTitle {
-  text-align: left;
-  color: hsl(226, 100%, 6%);
-  font-size: 20px;
-  margin: 0px;
-}
