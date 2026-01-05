@@ -124,3 +124,11 @@
   box-shadow: 3px 3px 5px;
   background: hsl(0, 0%, 100%);
 }
+
+.graphContainer {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 3px 3px 5px hsla(220, 36%, 71%, 0.5);
+  overflow: auto;
+}
