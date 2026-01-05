@@ -29,17 +29,12 @@ function RoleNodes({ nodes }) {
     <div className={styles.nodesGrid}>
       {nodes.map((node) => (
         <div key={node.nodeId} className={styles.nodeCard}>
-          
           {/* Header του node */}
           <div className={styles.nodeHeader}>
             <div className={styles.nodeCircle} />
             <div className={styles.nodeInfo}>
-              <div className={styles.nodeTitle}>
-                Node {node.nodeId}
-              </div>
-              <div className={styles.nodeSub}>
-                Avg similarity: {node.similarity.toFixed(2)}
-              </div>
+              <div className={styles.nodeTitle}>Node {node.nodeId}</div>
+              <div className={styles.nodeSub}>Avg similarity: {(node.similarity || 0).toFixed(2)}</div>
             </div>
           </div>
 
@@ -47,9 +42,7 @@ function RoleNodes({ nodes }) {
           <div className={styles.vmList}>
             {node.vms.map((vm) => (
               <div key={vm.id} className={styles.vmItem}>
-                <span className={styles.badge}>
-                  {roleLabel(vm.role)}
-                </span>
+                <span className={styles.badge}>{roleLabel(vm.role)}</span>
 
                 <span>{formatVm(vm)}</span>
 
@@ -72,7 +65,7 @@ function RoleNodes({ nodes }) {
 
 /* Τελικό component που χρησιμοποιεί η εφαρμογή */
 export default function PlacementOutput({ placement }) {
-  const nodes = placement.nodes || [];
+  const nodes = placement?.nodes || [];
 
   return (
     <div className={styles.wrapper}>

@@ -1,6 +1,5 @@
 .wrapper {
   background: hsl(0, 0%, 100%);
-  border: 1px solid hsl(184, 56%, 90%);
   border-radius: 10px;
   padding: 10px;
   box-shadow: 0 4px 10px hsla(0, 0%, 0%, 0.10);
@@ -8,7 +7,7 @@
 
 .nodesGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -107,6 +106,5 @@
   font-size: 11px;
   padding: 6px;
   background: hsl(190, 80%, 98%);
-  border: 1px dashed hsl(184, 56%, 85%);
   border-radius: 7px;
 }
