@@ -1,8 +1,4 @@
-export default function GraphEmbedVisual({
-  serviceNodes = [],
-  serviceEdges = [],
-  placementNodes = [], // <-- περίμενε array [{nodeId, availableCpu,...}]
-}) {
+export default function GraphEmbedVisual({ serviceNodes = [], serviceEdges = [], placementNodes = [] }) {
   // fixed θέσεις για service VMs (αριστερά)
   const pos = {
     'frontend-vm-1': { x: 120, y: 120 },
@@ -55,21 +51,24 @@ export default function GraphEmbedVisual({
     }
   }
 
-  // helper: πάρε availableCpu από placement
-  const getAvailableCpu = (letter) => {
+  // ✅ Ενημερωμένο helper: παίρνει διαθέσιμη και συνολική CPU
+  const getCpuData = (letter) => {
     const nodeId = letterToNodeId[letter];
     const node = (placementNodes || []).find((n) => n.nodeId === nodeId);
     if (!node) return null;
-    return node.availableCpu;
+    return {
+      available: node.availableCpu,
+      total: node.totalCpu, // έρχεται από το useResourceCalcGraph
+    };
   };
 
   return (
-    <svg width="900" height="420" viewBox="0 0 900 420">
+    <svg width='900' height='420' viewBox='0 0 900 420'>
       {/* Titles */}
-      <text x="40" y="45" fontSize="18" fontWeight="700">
+      <text x='40' y='45' fontSize='18' fontWeight='700'>
         Service Graph (VMs)
       </text>
-      <text x="560" y="45" fontSize="18" fontWeight="700">
+      <text x='560' y='45' fontSize='18' fontWeight='700'>
         Provider Network (K L M N O P)
       </text>
 
@@ -81,9 +80,9 @@ export default function GraphEmbedVisual({
 
         return (
           <g key={`${e.from}-${e.to}`}>
-            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#111" strokeWidth="2" />
+            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke='#111' strokeWidth='2' />
             {typeof e.bw === 'number' && e.bw > 0 && (
-              <text x={(p1.x + p2.x) / 2 + 10} y={(p1.y + p2.y) / 2 - 10} fontSize="12">
+              <text x={(p1.x + p2.x) / 2 + 10} y={(p1.y + p2.y) / 2 - 10} fontSize='12'>
                 BW {e.bw}
               </text>
             )}
@@ -98,42 +97,41 @@ export default function GraphEmbedVisual({
 
         return (
           <g key={n.id}>
-            <circle cx={p.x} cy={p.y} r="20" fill="#1e40af" />
-            <text x={p.x} y={p.y + 5} textAnchor="middle" fill="white" fontWeight="700">
+            <circle cx={p.x} cy={p.y} r='20' fill='#1e40af' />
+            <text x={p.x} y={p.y + 5} textAnchor='middle' fill='white' fontWeight='700'>
               {n.label || labelOf(n.id)}
             </text>
 
-            <text x={p.x + 35} y={p.y - 6} fontSize="12">
+            <text x={p.x + 35} y={p.y - 6} fontSize='12'>
               CPU {n.cpu}
             </text>
-            <text x={p.x + 35} y={p.y + 12} fontSize="12">
+            <text x={p.x + 35} y={p.y + 12} fontSize='12'>
               RAM {n.memory}
             </text>
           </g>
         );
       })}
 
-      {/* Provider edges (δεξιά) + BW (κόκκινο) */}
+      {/* Provider edges (δεξιά) */}
       {providerEdges.map(([from, to, bw]) => {
         const p1 = providerPos[from];
         const p2 = providerPos[to];
         if (!p1 || !p2) return null;
 
-        // midpoint + μικρό offset για label
         const mx = (p1.x + p2.x) / 2;
         const my = (p1.y + p2.y) / 2;
 
         return (
           <g key={`${from}-${to}`}>
-            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#111" strokeWidth="2" />
-            <text x={mx} y={my - 10} fontSize="12" fill="red" fontWeight="700" textAnchor="middle">
+            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke='#111' strokeWidth='2' />
+            <text x={mx} y={my - 10} fontSize='12' fill='red' fontWeight='700' textAnchor='middle'>
               {bw}
             </text>
           </g>
         );
       })}
 
-      {/* Provider nodes (δεξιά) + CPU available πάνω από τον κύκλο */}
+      {/* Provider nodes (δεξιά) */}
       {providerLetters.map((id) => {
         const p = providerPos[id];
 
@@ -141,24 +139,24 @@ export default function GraphEmbedVisual({
         const fill = roles.includes('frontend')
           ? '#93c5fd'
           : roles.includes('backend')
-          ? '#86efac'
-          : roles.includes('database')
-          ? '#fca5a5'
-          : '#e5e7eb';
+            ? '#86efac'
+            : roles.includes('database')
+              ? '#fca5a5'
+              : '#e5e7eb';
 
-        const availCpu = getAvailableCpu(id);
+        const cpuData = getCpuData(id);
 
         return (
           <g key={id}>
-            {/* CPU available label */}
-            {availCpu !== null && (
-              <text x={p.x} y={p.y - 38} textAnchor="middle" fontSize="14" fontWeight="700">
-                remaing CPU {availCpu}
+            {/* ✅ Ενημερωμένη ετικέτα CPU: remaining CPU X / Y */}
+            {cpuData && (
+              <text x={p.x} y={p.y - 38} textAnchor='middle' fontSize='13' fontWeight='700'>
+                remaining CPU {cpuData.available} / {cpuData.total}
               </text>
             )}
 
-            <circle cx={p.x} cy={p.y} r="26" fill={fill} stroke="#111" strokeWidth="2" />
-            <text x={p.x} y={p.y + 5} textAnchor="middle" fontWeight="700">
+            <circle cx={p.x} cy={p.y} r='26' fill={fill} stroke='#111' strokeWidth='2' />
+            <text x={p.x} y={p.y + 5} textAnchor='middle' fontWeight='700'>
               {id}
             </text>
           </g>
