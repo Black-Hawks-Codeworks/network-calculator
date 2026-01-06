@@ -1,16 +1,20 @@
-//import GraphInput from './components/graph-input';
 import useResourceCalcGraph from './hooks/use-resourse-calc-graph';
 import styles from './graph-placement-page.module.css';
 import GraphEmbedVisual from './components/graph-embed-visual';
 import CalculatorInput from '../resource-calc/components/calculator-input';
 
 export default function GraphPlacementPage() {
-  // gia na min skaei
   const hook = useResourceCalcGraph();
   const values = hook?.values ?? {};
   const handleChange = hook?.handleChange ?? (() => {});
   const handleCalculate = hook?.handleCalculate ?? (() => {});
   const placement = hook?.placement ?? { nodes: [] };
+
+  // Extract new BW props
+  const providerBw = hook?.providerBw ?? {};
+  const handleProviderBwChange = hook?.handleProviderBwChange ?? (() => {});
+  // Extract remaining BW map from placement state
+  const providerEdgesRemaining = placement?.providerEdgesRemaining ?? null;
 
   const serviceNodes = [
     {
@@ -98,11 +102,13 @@ export default function GraphPlacementPage() {
           <h2 className={styles.graphTitle}>Graph Visualization</h2>
 
           <div className={styles.graphContainer}>
-            {/* prosorino output gia na vlapw*/}
             <GraphEmbedVisual
               serviceNodes={serviceNodes}
               serviceEdges={serviceEdges}
               placementNodes={placement.nodes}
+              providerBw={providerBw}
+              onProviderBwChange={handleProviderBwChange}
+              providerEdgesRemaining={providerEdgesRemaining}
             />
           </div>
         </section>
