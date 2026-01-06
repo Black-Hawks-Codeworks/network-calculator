@@ -1,23 +1,22 @@
+import React from 'react';
+
 export default function GraphEmbedVisual({ serviceNodes = [], serviceEdges = [], placementNodes = [] }) {
-  // fixed θέσεις για service VMs (αριστερά)
+  // --- Configuration ---
   const pos = {
-    'frontend-vm-1': { x: 120, y: 120 },
-    'backend-vm-1': { x: 120, y: 220 },
-    'database-vm-1': { x: 120, y: 320 },
+    'frontend-vm-1': { x: 100, y: 100 },
+    'backend-vm-1': { x: 100, y: 210 },
+    'database-vm-1': { x: 100, y: 320 },
   };
 
-  // provider nodes (δεξιά)
-  const providerLetters = ['K', 'L', 'M', 'N', 'O', 'P'];
   const providerPos = {
-    K: { x: 360, y: 130 },
-    L: { x: 420, y: 90 },
-    M: { x: 470, y: 140 },
-    N: { x: 360, y: 260 },
-    O: { x: 420, y: 240 },
-    P: { x: 470, y: 290 },
+    K: { x: 400, y: 130 },
+    L: { x: 500, y: 80 },
+    M: { x: 600, y: 130 },
+    N: { x: 400, y: 280 },
+    O: { x: 500, y: 250 },
+    P: { x: 600, y: 300 },
   };
 
-  // σταθερές ακμές provider graph
   const providerEdges = [
     ['K', 'L', 6],
     ['L', 'M', 7],
@@ -29,6 +28,17 @@ export default function GraphEmbedVisual({ serviceNodes = [], serviceEdges = [],
     ['M', 'P', 5],
   ];
 
+  // Colors Palette
+  const COLORS = {
+    fe: '#60a5fa', // Blue
+    be: '#34d399', // Green
+    db: '#f87171', // Red
+    neutral: '#cbd5e1',
+    line: '#94a3b8',
+    text: '#334155',
+  };
+
+  // --- Logic Helpers ---
   const nodeIdToLetter = { 1: 'K', 2: 'L', 3: 'M', 4: 'N', 5: 'O', 6: 'P' };
   const letterToNodeId = { K: 1, L: 2, M: 3, N: 4, O: 5, P: 6 };
 
@@ -39,40 +49,76 @@ export default function GraphEmbedVisual({ serviceNodes = [], serviceEdges = [],
     return 'VM';
   };
 
-  // provider letter -> roles set (για χρωματισμό)
-  const placedRolesByProvider = {};
-  for (const node of placementNodes || []) {
-    const letter = nodeIdToLetter[node.nodeId];
-    if (!letter) continue;
+  // Determine Node Color (Gray if empty, Colored if role placed)
+  const getFillColor = (letter) => {
+    if (!placementNodes || placementNodes.length === 0) return '#f1f5f9';
 
-    for (const vm of node.vms || []) {
-      if (!placedRolesByProvider[letter]) placedRolesByProvider[letter] = new Set();
-      placedRolesByProvider[letter].add(vm.role);
-    }
-  }
-
-  // ✅ Ενημερωμένο helper: παίρνει διαθέσιμη και συνολική CPU
-  const getCpuData = (letter) => {
     const nodeId = letterToNodeId[letter];
-    const node = (placementNodes || []).find((n) => n.nodeId === nodeId);
+    const node = placementNodes.find((n) => n.nodeId === nodeId);
+
+    if (!node || !node.vms || node.vms.length === 0) return '#f1f5f9';
+
+    const roles = node.vms.map((v) => v.role);
+    if (roles.includes('frontend')) return COLORS.fe;
+    if (roles.includes('backend')) return COLORS.be;
+    if (roles.includes('database')) return COLORS.db;
+    return '#e2e8f0';
+  };
+
+  // Get CPU Stats (Returns null if no data)
+  const getCpuData = (letter) => {
+    if (!placementNodes || placementNodes.length === 0) return null;
+
+    const nodeId = letterToNodeId[letter];
+    const node = placementNodes.find((n) => n.nodeId === nodeId);
+
     if (!node) return null;
+
+    // Default total to 20 if missing, strictly for display safety
+    const total = node.totalCpu !== undefined ? node.totalCpu : 20;
+
     return {
       available: node.availableCpu,
-      total: node.totalCpu, // έρχεται από το useResourceCalcGraph
+      total: total,
     };
   };
 
+  // Get Cosine Similarity (Returns null if no data)
+  const getCosineSim = (letter) => {
+    if (!placementNodes || placementNodes.length === 0) return null;
+
+    const nodeId = letterToNodeId[letter];
+    const node = placementNodes.find((n) => n.nodeId === nodeId);
+
+    // Only return if valid number exists
+    if (!node || node.cosineSimilarity === undefined || node.cosineSimilarity === null) {
+      return null;
+    }
+    return node.cosineSimilarity;
+  };
+
   return (
-    <svg width='900' height='420' viewBox='0 0 900 420'>
-      {/* Titles */}
-      <text x='40' y='45' fontSize='18' fontWeight='700'>
-        Service Graph (VMs)
+    <svg width='100%' height='100%' viewBox='0 0 750 420' style={{ overflow: 'visible' }}>
+      <defs>
+        {/* Shadow Filter */}
+        <filter id='shadow' x='-20%' y='-20%' width='140%' height='140%'>
+          <feDropShadow dx='2' dy='2' stdDeviation='2' floodOpacity='0.2' />
+        </filter>
+        {/* Arrow Marker */}
+        <marker id='arrow' markerWidth='10' markerHeight='7' refX='28' refY='3.5' orient='auto'>
+          <polygon points='0 0, 10 3.5, 0 7' fill={COLORS.line} />
+        </marker>
+      </defs>
+
+      {/* --- Titles --- */}
+      <text x='100' y='10' textAnchor='middle' fontWeight='700' fill={COLORS.text}>
+        Service Graph
       </text>
-      <text x='560' y='45' fontSize='18' fontWeight='700'>
-        Provider Network (K L M N O P)
+      <text x='500' y='10' textAnchor='middle' fontWeight='700' fill={COLORS.text}>
+        Provider Network
       </text>
 
-      {/* Service edges (αριστερά) */}
+      {/* --- Service Edges (Left) --- */}
       {serviceEdges.map((e) => {
         const p1 = pos[e.from];
         const p2 = pos[e.to];
@@ -80,83 +126,115 @@ export default function GraphEmbedVisual({ serviceNodes = [], serviceEdges = [],
 
         return (
           <g key={`${e.from}-${e.to}`}>
-            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke='#111' strokeWidth='2' />
-            {typeof e.bw === 'number' && e.bw > 0 && (
-              <text x={(p1.x + p2.x) / 2 + 10} y={(p1.y + p2.y) / 2 - 10} fontSize='12'>
-                BW {e.bw}
-              </text>
+            <line
+              x1={p1.x}
+              y1={p1.y}
+              x2={p2.x}
+              y2={p2.y}
+              stroke={COLORS.line}
+              strokeWidth='2'
+              strokeDasharray='5,5'
+              markerEnd='url(#arrow)'
+            />
+            {e.bw > 0 && (
+              <g>
+                <rect
+                  x={(p1.x + p2.x) / 2 - 20}
+                  y={(p1.y + p2.y) / 2 - 10}
+                  width='40'
+                  height='20'
+                  rx='4'
+                  fill='white'
+                  stroke='#e2e8f0'
+                />
+                <text x={(p1.x + p2.x) / 2} y={(p1.y + p2.y) / 2 + 4} fontSize='11' textAnchor='middle' fill='#64748b'>
+                  {e.bw}
+                </text>
+              </g>
             )}
           </g>
         );
       })}
 
-      {/* Service nodes (VMs) */}
+      {/* --- Service Nodes (Left) --- */}
       {serviceNodes.map((n) => {
         const p = pos[n.id];
         if (!p) return null;
-
         return (
-          <g key={n.id}>
-            <circle cx={p.x} cy={p.y} r='20' fill='#1e40af' />
+          <g key={n.id} filter='url(#shadow)'>
+            {/* Info Box */}
+            <rect x={p.x - 95} y={p.y - 20} width='65' height='40' rx='4' fill='white' stroke='#e2e8f0' />
+            <text x={p.x - 62} y={p.y - 5} fontSize='10' textAnchor='middle' fill='#64748b'>
+              CPU: {n.cpu}
+            </text>
+            <text x={p.x - 62} y={p.y + 10} fontSize='10' textAnchor='middle' fill='#64748b'>
+              RAM: {n.memory}
+            </text>
+
+            <circle cx={p.x} cy={p.y} r='22' fill='#2563eb' stroke='white' strokeWidth='2' />
             <text x={p.x} y={p.y + 5} textAnchor='middle' fill='white' fontWeight='700'>
               {n.label || labelOf(n.id)}
-            </text>
-
-            <text x={p.x + 35} y={p.y - 6} fontSize='12'>
-              CPU {n.cpu}
-            </text>
-            <text x={p.x + 35} y={p.y + 12} fontSize='12'>
-              RAM {n.memory}
             </text>
           </g>
         );
       })}
 
-      {/* Provider edges (δεξιά) */}
+      {/* --- Provider Edges (Right) --- */}
       {providerEdges.map(([from, to, bw]) => {
         const p1 = providerPos[from];
         const p2 = providerPos[to];
         if (!p1 || !p2) return null;
-
-        const mx = (p1.x + p2.x) / 2;
-        const my = (p1.y + p2.y) / 2;
-
         return (
           <g key={`${from}-${to}`}>
-            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke='#111' strokeWidth='2' />
-            <text x={mx} y={my - 10} fontSize='12' fill='red' fontWeight='700' textAnchor='middle'>
+            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke='#cbd5e1' strokeWidth='4' />
+            <rect x={(p1.x + p2.x) / 2 - 12} y={(p1.y + p2.y) / 2 - 9} width='24' height='18' rx='4' fill='white' />
+            <text
+              x={(p1.x + p2.x) / 2}
+              y={(p1.y + p2.y) / 2 + 4}
+              fontSize='11'
+              fontWeight='700'
+              fill='#ef4444'
+              textAnchor='middle'>
               {bw}
             </text>
           </g>
         );
       })}
 
-      {/* Provider nodes (δεξιά) */}
-      {providerLetters.map((id) => {
+      {/* --- Provider Nodes (Right) --- */}
+      {Object.keys(providerPos).map((id) => {
         const p = providerPos[id];
-
-        const roles = placedRolesByProvider[id] ? Array.from(placedRolesByProvider[id]) : [];
-        const fill = roles.includes('frontend')
-          ? '#93c5fd'
-          : roles.includes('backend')
-            ? '#86efac'
-            : roles.includes('database')
-              ? '#fca5a5'
-              : '#e5e7eb';
-
+        const fill = getFillColor(id);
         const cpuData = getCpuData(id);
+        const sim = getCosineSim(id);
 
         return (
-          <g key={id}>
-            {/* ✅ Ενημερωμένη ετικέτα CPU: remaining CPU X / Y */}
+          <g key={id} filter='url(#shadow)'>
+            {/* 1. CPU Label (Topmost) */}
             {cpuData && (
-              <text x={p.x} y={p.y - 38} textAnchor='middle' fontSize='13' fontWeight='700'>
-                remaining CPU {cpuData.available} / {cpuData.total}
-              </text>
+              <g>
+                {/* Positioned at y - 68 */}
+                <rect x={p.x - 40} y={p.y - 68} width='80' height='18' rx='9' fill='#f8fafc' stroke='#e2e8f0' />
+                <text x={p.x} y={p.y - 56} textAnchor='middle' fontSize='10' fontWeight='600' fill='#64748b'>
+                  CPU: {cpuData.available} / {cpuData.total}
+                </text>
+              </g>
             )}
 
-            <circle cx={p.x} cy={p.y} r='26' fill={fill} stroke='#111' strokeWidth='2' />
-            <text x={p.x} y={p.y + 5} textAnchor='middle' fontWeight='700'>
+            {/* 2. Cosine Similarity Label (Middle) */}
+            {sim !== null && (
+              <g>
+                {/* Positioned at y - 46 (Under CPU) */}
+                <rect x={p.x - 30} y={p.y - 46} width='60' height='16' rx='8' fill='#f3e8ff' stroke='#d8b4fe' />
+                <text x={p.x} y={p.y - 34} textAnchor='middle' fontSize='10' fontWeight='600' fill='#7e22ce'>
+                  Sim: {Number(sim).toFixed(3)}
+                </text>
+              </g>
+            )}
+
+            {/* 3. The Node Circle (Bottom) */}
+            <circle cx={p.x} cy={p.y} r='26' fill={fill} stroke='white' strokeWidth='3' />
+            <text x={p.x} y={p.y + 6} textAnchor='middle' fontWeight='700' fill='#1e293b'>
               {id}
             </text>
           </g>

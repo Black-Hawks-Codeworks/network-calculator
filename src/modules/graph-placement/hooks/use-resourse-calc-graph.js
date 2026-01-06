@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { placeVMs } from '@/shared/utils/vm-placement';
 
 const PROVIDER_CAPACITY = {
   K: { cpu: 20, memory: 32 },
@@ -10,7 +9,7 @@ const PROVIDER_CAPACITY = {
   P: { cpu: 4, memory: 32 },
 };
 
-// Τα BW όρια των ακμών του Provider
+// Provider Edge Bandwidth Limits
 const PROVIDER_BW = {
   'K-L': 6,
   'L-K': 6,
@@ -33,6 +32,19 @@ const PROVIDER_BW = {
 const NODE_ID_TO_LETTER = { 1: 'K', 2: 'L', 3: 'M', 4: 'N', 5: 'O', 6: 'P' };
 const LETTER_TO_NODE_ID = { K: 1, L: 2, M: 3, N: 4, O: 5, P: 6 };
 
+// Helper: Calculate Cosine Similarity
+// Used to generate the "Sim" score for the visual graph
+const calculateCosineSimilarity = (usedCpu, usedMem, totalCpu, totalMem) => {
+  const dotProduct = usedCpu * totalCpu + usedMem * totalMem;
+  const magUsed = Math.sqrt(usedCpu ** 2 + usedMem ** 2);
+  const magTotal = Math.sqrt(totalCpu ** 2 + totalMem ** 2);
+
+  // Prevent division by zero
+  if (magUsed === 0 || magTotal === 0) return 0;
+
+  return dotProduct / (magUsed * magTotal);
+};
+
 export default function useResourceCalcGraph() {
   const [values, setValues] = useState({
     frontendCpu: '',
@@ -49,37 +61,41 @@ export default function useResourceCalcGraph() {
 
   const handleChange = (e) => setValues((prev) => ({ ...prev, [e.target.id]: e.target.value }));
 
-  // Helper για να ελέγχουμε αν υπάρχει σύνδεση και αν το BW επαρκεί
+  // Helper to check Bandwidth connectivity
   const checkBwPath = (sourceLetter, destLetter, requiredBw) => {
-    if (sourceLetter === destLetter) return true; // Ίδιος κόμβος, απεριόριστο BW
+    if (sourceLetter === destLetter) return true;
     const edgeKey = `${sourceLetter}-${destLetter}`;
     const limit = PROVIDER_BW[edgeKey];
-    if (limit === undefined) return false; // Δεν υπάρχει απευθείας ακμή
+    if (limit === undefined) return false;
     return requiredBw <= limit;
   };
 
   const handleCalculate = () => {
-    const fe = { cpu: Number(values.frontendCpu), mem: Number(values.frontendMemory), id: 'frontend-vm-1' };
-    const be = { cpu: Number(values.backendCpu), mem: Number(values.backendMemory), id: 'backend-vm-1' };
-    const db = { cpu: Number(values.dbCpu), mem: Number(values.dbMemory), id: 'database-vm-1' };
+    // 1. Prepare Data
+    const fe = { cpu: Number(values.frontendCpu) || 0, mem: Number(values.frontendMemory) || 0, id: 'frontend-vm-1' };
+    const be = { cpu: Number(values.backendCpu) || 0, mem: Number(values.backendMemory) || 0, id: 'backend-vm-1' };
+    const db = { cpu: Number(values.dbCpu) || 0, mem: Number(values.dbMemory) || 0, id: 'database-vm-1' };
     const bwFeBe = Number(values.bwFeBe) || 0;
     const bwBeDb = Number(values.bwBeDb) || 0;
+
+    // --- 🚨 VALIDATION CHECK 🚨 ---
+    const totalCpuRequested = fe.cpu + be.cpu + db.cpu;
+    const totalMemRequested = fe.mem + be.mem + db.mem;
+
+    // If no resources have been entered, show alert and stop.
+    if (totalCpuRequested === 0 && totalMemRequested === 0) {
+      window.alert('Please enter CPU and RAM values for the services before calculating.');
+      return;
+    }
+    // -----------------------------
 
     const letters = Object.keys(PROVIDER_CAPACITY);
     let finalAssignment = null;
 
-    // Brute-force αναζήτηση για έγκυρο placement (CPU + RAM + BW)
-    // Ψάχνουμε συνδυασμό κόμβων (i, j, k) για τα FE, BE, DB
+    // 2. Brute-force placement algorithm
     for (let i of letters) {
       for (let j of letters) {
         for (let k of letters) {
-          const usage = {
-            [i]: { cpu: fe.cpu, mem: fe.mem },
-            [j]: { cpu: (j === i ? 0 : 0) + be.cpu, mem: (j === i ? 0 : 0) + be.mem },
-            [k]: { cpu: 0, mem: 0 },
-          };
-
-          // Σωστός υπολογισμός αθροιστικού usage αν μπαίνουν στον ίδιο κόμβο
           const currentUsage = {};
           letters.forEach((l) => (currentUsage[l] = { cpu: 0, mem: 0 }));
 
@@ -90,14 +106,13 @@ export default function useResourceCalcGraph() {
           currentUsage[k].cpu += db.cpu;
           currentUsage[k].mem += db.mem;
 
-          // 1. Έλεγχος CPU/RAM
+          // Check Resources (CPU & RAM limits)
           const resourceOk = letters.every(
             (l) => currentUsage[l].cpu <= PROVIDER_CAPACITY[l].cpu && currentUsage[l].mem <= PROVIDER_CAPACITY[l].memory
           );
-
           if (!resourceOk) continue;
 
-          // 2. Έλεγχος Bandwidth Constraints
+          // Check Bandwidth
           const bwOk = checkBwPath(i, j, bwFeBe) && checkBwPath(j, k, bwBeDb);
 
           if (bwOk) {
@@ -115,7 +130,7 @@ export default function useResourceCalcGraph() {
       return;
     }
 
-    // Build placement nodes for Graph
+    // 3. Build Graph Data for Visualization
     const allVms = [
       { ...fe, role: 'frontend' },
       { ...be, role: 'backend' },
@@ -124,15 +139,23 @@ export default function useResourceCalcGraph() {
 
     const nodes = letters.map((letter) => {
       const vmsHere = allVms.filter((vm) => finalAssignment[vm.id] === letter);
+
       const usedCpu = vmsHere.reduce((sum, v) => sum + v.cpu, 0);
       const usedMem = vmsHere.reduce((sum, v) => sum + v.mem, 0);
+
+      const totalCpu = PROVIDER_CAPACITY[letter].cpu;
+      const totalMem = PROVIDER_CAPACITY[letter].memory;
+
+      // Calculate the Cosine Similarity for the visual badge
+      const sim = calculateCosineSimilarity(usedCpu, usedMem, totalCpu, totalMem);
 
       return {
         nodeId: LETTER_TO_NODE_ID[letter],
         vms: vmsHere,
-        totalCpu: PROVIDER_CAPACITY[letter].cpu,
-        availableCpu: PROVIDER_CAPACITY[letter].cpu - usedCpu,
-        availableMemory: PROVIDER_CAPACITY[letter].memory - usedMem,
+        totalCpu: totalCpu,
+        availableCpu: totalCpu - usedCpu,
+        availableMemory: totalMem - usedMem,
+        cosineSimilarity: sim, // Passed to the Visual component
       };
     });
 

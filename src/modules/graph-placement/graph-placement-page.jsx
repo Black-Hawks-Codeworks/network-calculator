@@ -38,7 +38,6 @@ export default function GraphPlacementPage() {
     { from: 'backend-vm-1', to: 'database-vm-1', bw: Number(values.bwBeDb || 0) },
   ];
 
-  
   return (
     <div className={styles.page}>
       {/* DESCRIPTION */}
