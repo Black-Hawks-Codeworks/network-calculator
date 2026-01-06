@@ -60,7 +60,7 @@ export default function GraphPlacementPage() {
       {/* FORM kai GRAPH  */}
       <div className={styles.contentRow}>
         <section className={styles.formCard}>
-          <h2 className={styles.formTitle}>Available Resources : CPU = 20, RAM=32, BANDWIDTH = 150</h2>
+          <h2 className={styles.formTitle}>Available Resources : CPU = 20, RAM=32</h2>
 
           <div className={styles.tiersRow}>
             {/* Frontend */}
