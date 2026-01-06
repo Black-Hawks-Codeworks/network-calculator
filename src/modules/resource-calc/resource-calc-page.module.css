@@ -96,12 +96,15 @@
   cursor: pointer;
   box-shadow: 3px 3px 5px hsla(220, 36%, 71%, 0.5);
   font-size: larger;
+  transition: transform 0.1s ease;
 }
 
 .calculateButton:hover {
   background-color: hsl(227, 74%, 43%);
 }
-
+.calculateButton:active {
+  transform: scale(0.95);
+}
 .outputBox {
   margin-left: auto;
   margin-right: 20px;
