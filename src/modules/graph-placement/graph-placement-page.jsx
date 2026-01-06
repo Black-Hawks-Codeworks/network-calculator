@@ -4,7 +4,6 @@ import styles from './graph-placement-page.module.css';
 import GraphEmbedVisual from './components/graph-embed-visual';
 import CalculatorInput from '../resource-calc/components/calculator-input';
 
-
 export default function GraphPlacementPage() {
   // gia na min skaei
   const hook = useResourceCalcGraph();
@@ -39,9 +38,7 @@ export default function GraphPlacementPage() {
     { from: 'backend-vm-1', to: 'database-vm-1', bw: Number(values.bwBeDb || 0) },
   ];
 
-  // από το hook σου: placement.nodes
-  const placementNodes = placement?.nodes ?? [];
-
+  
   return (
     <div className={styles.page}>
       {/* DESCRIPTION */}
@@ -103,7 +100,11 @@ export default function GraphPlacementPage() {
 
           <div className={styles.graphContainer}>
             {/* prosorino output gia na vlapw*/}
-            <GraphEmbedVisual serviceNodes={serviceNodes} serviceEdges={serviceEdges} placementNodes={placementNodes} />
+            <GraphEmbedVisual
+              serviceNodes={serviceNodes}
+              serviceEdges={serviceEdges}
+              placementNodes={placement.nodes}
+            />
           </div>
         </section>
       </div>
