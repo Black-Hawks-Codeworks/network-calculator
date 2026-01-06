@@ -4,6 +4,7 @@ import styles from './graph-placement-page.module.css';
 import GraphEmbedVisual from './components/graph-embed-visual';
 import CalculatorInput from '../resource-calc/components/calculator-input';
 
+
 export default function GraphPlacementPage() {
   // gia na min skaei
   const hook = useResourceCalcGraph();

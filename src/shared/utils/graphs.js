@@ -1,59 +1,59 @@
-// Class for Adjacency List in Graphs Theory
-// with bidirectional edges for the Vertex(node)
+// Graph with adjacency list + edge bandwidth (weight)
+// and optional node metadata (e.g., CPU capacity)
 
-class Graph {
+export class Graph {
   constructor() {
+    // adjacencyList[v] = [{ to: 'L', bw: 6 }, ...]
     this.adjacencyList = {};
+    // nodeMeta[v] = { cpu: 7 } etc.
+    this.nodeMeta = {};
   }
 
-  addVertex(vertex) {
+  addVertex(vertex, meta = {}) {
     if (!this.adjacencyList[vertex]) {
       this.adjacencyList[vertex] = [];
+      this.nodeMeta[vertex] = { ...meta };
       return true;
     }
+    // if already exists, we can update meta (optional)
+    this.nodeMeta[vertex] = { ...(this.nodeMeta[vertex] || {}), ...meta };
     return false;
   }
 
-  addEdge(vertex1, vertex2) {
-    if (this.adjacencyList[vertex1] && this.adjacencyList[vertex2]) {
-      this.adjacencyList[vertex1].push(vertex2);
-      this.adjacencyList[vertex2].push(vertex1);
-      return true;
-    }
-    return false;
+  // Adds an UNDIRECTED edge with bandwidth bw
+  addEdge(v1, v2, bw = 0) {
+    if (!this.adjacencyList[v1] || !this.adjacencyList[v2]) return false;
+
+    // prevent duplicates: update if exists
+    const upsert = (from, to) => {
+      const list = this.adjacencyList[from];
+      const idx = list.findIndex((e) => e.to === to);
+      if (idx >= 0) list[idx] = { to, bw };
+      else list.push({ to, bw });
+    };
+
+    upsert(v1, v2);
+    upsert(v2, v1);
+    return true;
   }
 
-  removeEdge(vertex1, vertex2) {
-    if (this.adjacencyList[vertex1] && this.adjacencyList[vertex2]) {
-      this.adjacencyList[vertex1] = this.adjacencyList[vertex1].filter((n) => n !== vertex2);
-      this.adjacencyList[vertex2] = this.adjacencyList[vertex2].filter((n) => n !== vertex1);
-      return true;
-    }
-    return false;
+  removeEdge(v1, v2) {
+    if (!this.adjacencyList[v1] || !this.adjacencyList[v2]) return false;
+
+    this.adjacencyList[v1] = this.adjacencyList[v1].filter((e) => e.to !== v2);
+    this.adjacencyList[v2] = this.adjacencyList[v2].filter((e) => e.to !== v1);
+    return true;
   }
 
   removeVertex(vertex) {
-    if (!this.adjacencyList[vertex]) return undefined;
-    while (this.adjacencyList.length) {
-      const temp = this.adjacencyList[vertex].pop();
-      this.removeEdge(vertex, temp);
+    if (!this.adjacencyList[vertex]) return false;
+
+    // remove edges from neighbors
+    for (const e of this.adjacencyList[vertex]) {
+      this.removeEdge(vertex, e.to);
     }
     delete this.adjacencyList[vertex];
+    delete this.nodeMeta[vertex];
+    return true;
   }
 }
-
-// Example of use
-// const graph = new Graph();
-
-// graph.addVertex(5);
-// graph.addVertex(15);
-// graph.addEdge(5, 15);
-// {
-//   5:[15]
-//   15:[5]
-// }
-
-// graph.removeVertex(5) =>
-// {
-//   15:[empty array]
-// }
