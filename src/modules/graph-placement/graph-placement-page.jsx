@@ -53,7 +53,8 @@ export default function GraphPlacementPage() {
           well as the bandwidth demands between interconnected services. Using these inputs, the system computes a
           resource-aware placement of virtual machines onto physical nodes and presents the result alongside a graphical
           representation of the service graph. This visualization helps illustrate both the allocation of computing
-          resources and the network relationships between application components.
+          resources and the network relationships between application components. The frontend vm is depicted in blue,
+          the backend vm is depicted in green and database is depicted in red.
         </p>
       </section>
 

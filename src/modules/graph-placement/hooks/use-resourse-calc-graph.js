@@ -17,7 +17,6 @@ const calculateCosineSimilarity = (usedCpu, usedMem, totalCpu, totalMem) => {
   const dotProduct = usedCpu * totalCpu + usedMem * totalMem;
   const magUsed = Math.sqrt(usedCpu ** 2 + usedMem ** 2);
   const magTotal = Math.sqrt(totalCpu ** 2 + totalMem ** 2);
-
   if (magUsed === 0 || magTotal === 0) return 0;
   return dotProduct / (magUsed * magTotal);
 };
@@ -56,10 +55,22 @@ export default function useResourceCalcGraph() {
   const [placement, setPlacement] = useState({
     nodes: [],
     edges: { feToBe: 0, beToDb: 0 },
-    providerEdgesRemaining: null, // New State
+    providerEdgesRemaining: null,
   });
 
-  const handleChange = (e) => setValues((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  // -----------------------------------------------------------------
+  // 1️⃣  Prevent negative numbers for CPU / RAM fields
+  // -----------------------------------------------------------------
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    const resourceFields = ['frontendCpu', 'frontendMemory', 'backendCpu', 'backendMemory', 'dbCpu', 'dbMemory'];
+
+    if (resourceFields.includes(id) && Number(value) < 0) {
+      // ignore negative entry
+      return;
+    }
+    setValues((prev) => ({ ...prev, [id]: value }));
+  };
 
   const handleProviderBwChange = (from, to, val) => {
     const num = Number(val);
@@ -78,10 +89,26 @@ export default function useResourceCalcGraph() {
     return requiredBw <= limit;
   };
 
+  // -----------------------------------------------------------------
+  // 2️⃣  Placement algorithm – reject assignments that leave negative
+  //      remaining bandwidth on any edge
+  // -----------------------------------------------------------------
   const handleCalculate = () => {
-    const fe = { cpu: Number(values.frontendCpu) || 0, mem: Number(values.frontendMemory) || 0, id: 'frontend-vm-1' };
-    const be = { cpu: Number(values.backendCpu) || 0, mem: Number(values.backendMemory) || 0, id: 'backend-vm-1' };
-    const db = { cpu: Number(values.dbCpu) || 0, mem: Number(values.dbMemory) || 0, id: 'database-vm-1' };
+    const fe = {
+      cpu: Number(values.frontendCpu) || 0,
+      mem: Number(values.frontendMemory) || 0,
+      id: 'frontend-vm-1',
+    };
+    const be = {
+      cpu: Number(values.backendCpu) || 0,
+      mem: Number(values.backendMemory) || 0,
+      id: 'backend-vm-1',
+    };
+    const db = {
+      cpu: Number(values.dbCpu) || 0,
+      mem: Number(values.dbMemory) || 0,
+      id: 'database-vm-1',
+    };
     const bwFeBe = Number(values.bwFeBe) || 0;
     const bwBeDb = Number(values.bwBeDb) || 0;
 
@@ -95,10 +122,45 @@ export default function useResourceCalcGraph() {
 
     const letters = Object.keys(PROVIDER_CAPACITY);
     let finalAssignment = null;
+    let finalEdgesRemaining = null;
 
-    for (let i of letters) {
-      for (let j of letters) {
-        for (let k of letters) {
+    // -----------------------------------------------------------------
+    // Helper: compute remaining bandwidth for a given assignment
+    // -----------------------------------------------------------------
+    const calcProviderEdgesRemaining = (assignment) => {
+      const edgeUsage = {};
+      Object.keys(providerBw).forEach((k) => (edgeUsage[k] = 0));
+
+      const pFe = assignment[fe.id];
+      const pBe = assignment[be.id];
+      const pDb = assignment[db.id];
+
+      if (pFe !== pBe) {
+        edgeUsage[`${pFe}-${pBe}`] += bwFeBe;
+        edgeUsage[`${pBe}-${pFe}`] += bwFeBe;
+      }
+      if (pBe !== pDb) {
+        edgeUsage[`${pBe}-${pDb}`] += bwBeDb;
+        edgeUsage[`${pDb}-${pBe}`] += bwBeDb;
+      }
+
+      const remaining = {};
+      Object.keys(providerBw).forEach((k) => {
+        remaining[k] = providerBw[k] - (edgeUsage[k] || 0);
+      });
+      return remaining;
+    };
+
+    // -----------------------------------------------------------------
+    // Exhaustive search – three nested loops
+    // -----------------------------------------------------------------
+    let found = false;
+
+    for (const i of letters) {
+      if (found) break;
+      for (const j of letters) {
+        if (found) break;
+        for (const k of letters) {
           const currentUsage = {};
           letters.forEach((l) => (currentUsage[l] = { cpu: 0, mem: 0 }));
 
@@ -109,21 +171,25 @@ export default function useResourceCalcGraph() {
           currentUsage[k].cpu += db.cpu;
           currentUsage[k].mem += db.mem;
 
-          const resourceOk = letters.every(
+          const resourcesOk = letters.every(
             (l) => currentUsage[l].cpu <= PROVIDER_CAPACITY[l].cpu && currentUsage[l].mem <= PROVIDER_CAPACITY[l].memory
           );
-          if (!resourceOk) continue;
+          if (!resourcesOk) continue;
 
           const bwOk = checkBwPath(i, j, bwFeBe) && checkBwPath(j, k, bwBeDb);
+          if (!bwOk) continue;
 
-          if (bwOk) {
-            finalAssignment = { [fe.id]: i, [be.id]: j, [db.id]: k };
-            break;
-          }
+          const candidate = { [fe.id]: i, [be.id]: j, [db.id]: k };
+          const candidateRemaining = calcProviderEdgesRemaining(candidate);
+          const hasNegative = Object.values(candidateRemaining).some((v) => v < 0);
+          if (hasNegative) continue;
+
+          finalAssignment = candidate;
+          finalEdgesRemaining = candidateRemaining;
+          found = true;
+          break; // exit innermost loop
         }
-        if (finalAssignment) break;
       }
-      if (finalAssignment) break;
     }
 
     if (!finalAssignment) {
@@ -131,30 +197,9 @@ export default function useResourceCalcGraph() {
       return;
     }
 
-    // --- Calculate Remaining Bandwidth ---
-    const edgeUsage = {};
-    Object.keys(providerBw).forEach((key) => (edgeUsage[key] = 0));
-
-    const pFe = finalAssignment[fe.id];
-    const pBe = finalAssignment[be.id];
-    const pDb = finalAssignment[db.id];
-
-    if (pFe !== pBe) {
-      edgeUsage[`${pFe}-${pBe}`] += bwFeBe;
-      edgeUsage[`${pBe}-${pFe}`] += bwFeBe;
-    }
-
-    if (pBe !== pDb) {
-      edgeUsage[`${pBe}-${pDb}`] += bwBeDb;
-      edgeUsage[`${pDb}-${pBe}`] += bwBeDb;
-    }
-
-    const providerEdgesRemaining = {};
-    Object.keys(providerBw).forEach((key) => {
-      providerEdgesRemaining[key] = providerBw[key] - (edgeUsage[key] || 0);
-    });
-    // -------------------------------------
-
+    // -----------------------------------------------------------------
+    // Build node information for the visualisation
+    // -----------------------------------------------------------------
     const allVms = [
       { ...fe, role: 'frontend' },
       { ...be, role: 'backend' },
@@ -163,8 +208,8 @@ export default function useResourceCalcGraph() {
 
     const nodes = letters.map((letter) => {
       const vmsHere = allVms.filter((vm) => finalAssignment[vm.id] === letter);
-      const usedCpu = vmsHere.reduce((sum, v) => sum + v.cpu, 0);
-      const usedMem = vmsHere.reduce((sum, v) => sum + v.mem, 0);
+      const usedCpu = vmsHere.reduce((s, v) => s + v.cpu, 0);
+      const usedMem = vmsHere.reduce((s, v) => s + v.mem, 0);
       const totalCpu = PROVIDER_CAPACITY[letter].cpu;
       const totalMem = PROVIDER_CAPACITY[letter].memory;
       const sim = calculateCosineSimilarity(usedCpu, usedMem, totalCpu, totalMem);
@@ -172,7 +217,7 @@ export default function useResourceCalcGraph() {
       return {
         nodeId: LETTER_TO_NODE_ID[letter],
         vms: vmsHere,
-        totalCpu: totalCpu,
+        totalCpu,
         availableCpu: totalCpu - usedCpu,
         availableMemory: totalMem - usedMem,
         cosineSimilarity: sim,
@@ -182,9 +227,16 @@ export default function useResourceCalcGraph() {
     setPlacement({
       nodes,
       edges: { feToBe: bwFeBe, beToDb: bwBeDb },
-      providerEdgesRemaining,
+      providerEdgesRemaining: finalEdgesRemaining,
     });
   };
 
-  return { values, handleChange, handleCalculate, placement, providerBw, handleProviderBwChange };
+  return {
+    values,
+    handleChange,
+    handleCalculate,
+    placement,
+    providerBw,
+    handleProviderBwChange,
+  };
 }
