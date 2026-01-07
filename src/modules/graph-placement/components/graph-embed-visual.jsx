@@ -6,13 +6,8 @@ export default function GraphEmbedVisual({
   placementNodes = [],
   providerBw = {},
   onProviderBwChange,
-  // New prop to receive remaining BW data (passed via placement object usually,
-  // but here we can read it from the parent's placement object passed down or add a specific prop)
-  // Since we pass 'placement.nodes', let's stick to the convention used in the page component.
-  // Actually, we need to pass the remaining data explicitly in the Page component.
-  // But for now, let's assume 'remainingBwMap' is passed or attached to placementNodes.
-  // Correction: It's cleaner to pass it as a prop. I will update the Page component to pass 'providerEdgesRemaining'.
   providerEdgesRemaining = null,
+  inputClassName = '',
 }) {
   const pos = {
     'frontend-vm-1': { x: 100, y: 100 },
@@ -21,12 +16,12 @@ export default function GraphEmbedVisual({
   };
 
   const providerPos = {
-    K: { x: 400, y: 130 },
+    K: { x: 380, y: 130 },
     L: { x: 500, y: 80 },
-    M: { x: 600, y: 130 },
-    N: { x: 380, y: 350 },
-    O: { x: 500, y: 350 },
-    P: { x: 625, y: 350 },
+    M: { x: 620, y: 130 },
+    N: { x: 380, y: 320 },
+    O: { x: 500, y: 320 },
+    P: { x: 620, y: 320 },
   };
 
   const providerConnections = [
@@ -90,20 +85,6 @@ export default function GraphEmbedVisual({
 
   return (
     <svg width='100%' height='100%' viewBox='0 0 750 420' style={{ overflow: 'visible' }}>
-      {/* 1. CSS to remove spinners */}
-      <style>
-        {`
-          .no-spinners::-webkit-outer-spin-button,
-          .no-spinners::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-          }
-          .no-spinners {
-            -moz-appearance: textfield;
-          }
-        `}
-      </style>
-
       <defs>
         <filter id='shadow' x='-20%' y='-20%' width='140%' height='140%'>
           <feDropShadow dx='2' dy='2' stdDeviation='2' floodOpacity='0.2' />
@@ -120,6 +101,7 @@ export default function GraphEmbedVisual({
         Provider Network
       </text>
 
+      {/* --- Service Edges --- */}
       {serviceEdges.map((e) => {
         const p1 = pos[e.from];
         const p2 = pos[e.to];
@@ -157,6 +139,7 @@ export default function GraphEmbedVisual({
         );
       })}
 
+      {/* --- Service Nodes --- */}
       {serviceNodes.map((n) => {
         const p = pos[n.id];
         if (!p) return null;
@@ -178,15 +161,13 @@ export default function GraphEmbedVisual({
         );
       })}
 
-      {/* --- Provider Edges (Editable + Remaining) --- */}
+      {/* --- Provider Edges (Dynamic Width & No Negatives) --- */}
       {providerConnections.map(([from, to]) => {
         const p1 = providerPos[from];
         const p2 = providerPos[to];
         if (!p1 || !p2) return null;
 
         const val = providerBw ? providerBw[`${from}-${to}`] : 0;
-
-        // Check for remaining bandwidth data
         const remVal = providerEdgesRemaining ? providerEdgesRemaining[`${from}-${to}`] : null;
 
         const mx = (p1.x + p2.x) / 2;
@@ -194,18 +175,25 @@ export default function GraphEmbedVisual({
 
         return (
           <g key={`${from}-${to}`}>
-            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke='#cbd5e1' strokeWidth='4' />
+            {/* Dynamic Line Width */}
+            <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke='#cbd5e1' strokeWidth={Math.max(2, Number(val))} />
 
-            {/* White pill background */}
             <rect x={mx - 12} y={my - 9} width='24' height='18' rx='4' fill='white' />
 
-            {/* Clickable Input */}
             <foreignObject x={mx - 15} y={my - 12} width='30' height='24'>
               <input
-                type='number'
+                type='number' // Set to number to use numpad
+                min='0' // Logic requirement
                 value={val}
-                className='no-spinners' // Uses the style tag above
-                onChange={(e) => onProviderBwChange && onProviderBwChange(from, to, e.target.value)}
+                className={inputClassName} // Used to hide spinners if supported by CSS
+                onChange={(e) => {
+                  let v = e.target.value;
+                  // If negative, force to 0
+                  if (v !== '' && Number(v) < 0) {
+                    v = '0';
+                  }
+                  onProviderBwChange && onProviderBwChange(from, to, v);
+                }}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -223,16 +211,8 @@ export default function GraphEmbedVisual({
               />
             </foreignObject>
 
-            {/* Remaining Bandwidth Label (Underneath) */}
             {remVal !== null && remVal !== undefined && (
-              <text
-                x={mx}
-                y={my + 20}
-                textAnchor='middle'
-                fontSize='9'
-                fontWeight='600'
-                fill='#059669' // Green color for remaining
-              >
+              <text x={mx} y={my + 22} textAnchor='middle' fontSize='10' fontWeight='600' fill='#059669'>
                 Rem: {remVal}
               </text>
             )}
@@ -240,6 +220,7 @@ export default function GraphEmbedVisual({
         );
       })}
 
+      {/* --- Provider Nodes --- */}
       {Object.keys(providerPos).map((id) => {
         const p = providerPos[id];
         const fill = getFillColor(id);

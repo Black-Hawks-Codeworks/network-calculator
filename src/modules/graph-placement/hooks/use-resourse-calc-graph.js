@@ -19,7 +19,6 @@ const calculateCosineSimilarity = (usedCpu, usedMem, totalCpu, totalMem) => {
   const magTotal = Math.sqrt(totalCpu ** 2 + totalMem ** 2);
 
   if (magUsed === 0 || magTotal === 0) return 0;
-
   return dotProduct / (magUsed * magTotal);
 };
 
@@ -54,11 +53,10 @@ export default function useResourceCalcGraph() {
     bwBeDb: '',
   });
 
-  // Added providerEdgesRemaining to initial state
   const [placement, setPlacement] = useState({
     nodes: [],
     edges: { feToBe: 0, beToDb: 0 },
-    providerEdgesRemaining: null,
+    providerEdgesRemaining: null, // New State
   });
 
   const handleChange = (e) => setValues((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -133,33 +131,29 @@ export default function useResourceCalcGraph() {
       return;
     }
 
-    // --- NEW: Calculate Remaining Bandwidth ---
+    // --- Calculate Remaining Bandwidth ---
     const edgeUsage = {};
-    // Initialize usage to 0
     Object.keys(providerBw).forEach((key) => (edgeUsage[key] = 0));
 
     const pFe = finalAssignment[fe.id];
     const pBe = finalAssignment[be.id];
     const pDb = finalAssignment[db.id];
 
-    // Add usage for FE->BE connection
     if (pFe !== pBe) {
       edgeUsage[`${pFe}-${pBe}`] += bwFeBe;
       edgeUsage[`${pBe}-${pFe}`] += bwFeBe;
     }
 
-    // Add usage for BE->DB connection
     if (pBe !== pDb) {
       edgeUsage[`${pBe}-${pDb}`] += bwBeDb;
       edgeUsage[`${pDb}-${pBe}`] += bwBeDb;
     }
 
-    // Calculate remaining
     const providerEdgesRemaining = {};
     Object.keys(providerBw).forEach((key) => {
       providerEdgesRemaining[key] = providerBw[key] - (edgeUsage[key] || 0);
     });
-    // ------------------------------------------
+    // -------------------------------------
 
     const allVms = [
       { ...fe, role: 'frontend' },
@@ -169,13 +163,10 @@ export default function useResourceCalcGraph() {
 
     const nodes = letters.map((letter) => {
       const vmsHere = allVms.filter((vm) => finalAssignment[vm.id] === letter);
-
       const usedCpu = vmsHere.reduce((sum, v) => sum + v.cpu, 0);
       const usedMem = vmsHere.reduce((sum, v) => sum + v.mem, 0);
-
       const totalCpu = PROVIDER_CAPACITY[letter].cpu;
       const totalMem = PROVIDER_CAPACITY[letter].memory;
-
       const sim = calculateCosineSimilarity(usedCpu, usedMem, totalCpu, totalMem);
 
       return {
@@ -188,7 +179,6 @@ export default function useResourceCalcGraph() {
       };
     });
 
-    // Pass providerEdgesRemaining to state
     setPlacement({
       nodes,
       edges: { feToBe: bwFeBe, beToDb: bwBeDb },

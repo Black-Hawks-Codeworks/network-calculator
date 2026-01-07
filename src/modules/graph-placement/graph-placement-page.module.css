@@ -3,10 +3,10 @@
   flex-direction: row;
   gap: 10px;
   padding: 24px;
-  background-color: hsl(210, 60%, 90%); 
+  background-color: hsl(210, 60%, 90%);
   min-height: 100vh;
 }
-.descriptionBox{
+.descriptionBox {
   background-color: hsl(0, 0%, 100%);
   padding: 25px;
   border-radius: 12px;
@@ -45,8 +45,8 @@
 .tiersRow {
   display: flex;
   flex-direction: row;
-  gap: 10px;        
-  justify-content: center;  
+  gap: 10px;
+  justify-content: center;
 }
 
 /* κάθε κουτί */
@@ -73,7 +73,7 @@
 
 /* Κουμπί CALCULATE */
 .calculateButton {
-  display: block;         
+  display: block;
   margin: 30px auto 0;
   margin-top: 30px;
   padding: 5px 20px;
