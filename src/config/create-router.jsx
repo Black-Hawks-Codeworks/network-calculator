@@ -1,7 +1,7 @@
 import { createBrowserRouter, redirect } from 'react-router-dom';
 
 import ResourceCalcPage from '@/modules/resource-calc/resource-calc-page';
-import GraphPlacementPage from '@/modules/graph-placement/graph-placement-page';
+import GraphPlacementPage from '@/modules/graph-placement/pages/graph-placement-page';
 import Layout from '@/shared/layout';
 
 export const createRouter = () => {
