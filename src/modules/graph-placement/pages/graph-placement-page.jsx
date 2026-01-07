@@ -1,14 +1,3 @@
-// =====================================
-// pages/graph-placement-page.jsx
-// =====================================
-// Αυτή είναι η σελίδα Graph Placement.
-// Εδώ:
-// - δείχνουμε inputs (CPU/RAM/BW)
-// - πατάμε CALCULATE
-// - δείχνουμε error (αν υπάρχει)
-// - δείχνουμε το γράφημα (GraphEmbedVisual)
-// =====================================
-
 import useGraphPlacement from '../hooks/useGraphPlacement';
 import styles from './graph-placement-page.module.css';
 
@@ -82,8 +71,8 @@ export default function GraphPlacementPage() {
       <section className={styles.descriptionBox}>
         <h2 className={styles.title}>Graph-Based Network Calculator</h2>
         <p className={styles.text}>
-          This page allows users to define the CPU,RAM and bandwidth requirements of a multi-tier application consisting of
-          frontend, backend, and database services. For each tier, the user specifies the required CPU resources, as
+          This page allows users to define the CPU,RAM and bandwidth requirements of a multi-tier application consisting
+          of frontend, backend, and database services. For each tier, the user specifies the required CPU resources, as
           well as the bandwidth demands between interconnected services. Using these inputs, the system computes a
           resource-aware placement of virtual machines onto physical nodes and presents the result alongside a graphical
           representation of the service graph. This visualization helps illustrate both the allocation of computing
@@ -109,8 +98,7 @@ export default function GraphPlacementPage() {
                 border: '1px solid #fecaca',
                 color: '#991b1b',
                 fontWeight: 600,
-              }}
-            >
+              }}>
               {error}
             </div>
           )}
@@ -119,29 +107,29 @@ export default function GraphPlacementPage() {
             {/* Frontend */}
             <div className={styles.tierCard}>
               <h3>Frontend</h3>
-              <CalculatorInput id="frontendCpu" label="CPU" value={values.frontendCpu} onChange={handleChange} />
-              <CalculatorInput id="frontendMemory" label="RAM" value={values.frontendMemory} onChange={handleChange} />
+              <CalculatorInput id='frontendCpu' label='CPU' value={values.frontendCpu} onChange={handleChange} />
+              <CalculatorInput id='frontendMemory' label='RAM' value={values.frontendMemory} onChange={handleChange} />
             </div>
 
             {/* Backend */}
             <div className={styles.tierCard}>
               <h3>Backend</h3>
-              <CalculatorInput id="backendCpu" label="CPU" value={values.backendCpu} onChange={handleChange} />
-              <CalculatorInput id="backendMemory" label="RAM" value={values.backendMemory} onChange={handleChange} />
+              <CalculatorInput id='backendCpu' label='CPU' value={values.backendCpu} onChange={handleChange} />
+              <CalculatorInput id='backendMemory' label='RAM' value={values.backendMemory} onChange={handleChange} />
             </div>
 
             {/* Database */}
             <div className={styles.tierCard}>
               <h3>Database</h3>
-              <CalculatorInput id="dbCpu" label="CPU" value={values.dbCpu} onChange={handleChange} />
-              <CalculatorInput id="dbMemory" label="RAM" value={values.dbMemory} onChange={handleChange} />
+              <CalculatorInput id='dbCpu' label='CPU' value={values.dbCpu} onChange={handleChange} />
+              <CalculatorInput id='dbMemory' label='RAM' value={values.dbMemory} onChange={handleChange} />
             </div>
 
             {/* Bandwidth */}
             <div className={styles.tierCard}>
               <h3>Bandwidth (Edges)</h3>
-              <CalculatorInput id="bwFeBe" label="FE → BE" value={values.bwFeBe} onChange={handleChange} />
-              <CalculatorInput id="bwBeDb" label="BE → DB" value={values.bwBeDb} onChange={handleChange} />
+              <CalculatorInput id='bwFeBe' label='FE → BE' value={values.bwFeBe} onChange={handleChange} />
+              <CalculatorInput id='bwBeDb' label='BE → DB' value={values.bwBeDb} onChange={handleChange} />
             </div>
           </div>
 
@@ -149,8 +137,7 @@ export default function GraphPlacementPage() {
             className={styles.calculateButton}
             onClick={handleCalculate}
             disabled={!hasAnyInput}
-            style={!hasAnyInput ? { opacity: 0.6, cursor: 'not-allowed' } : undefined}
-          >
+            style={!hasAnyInput ? { opacity: 0.6, cursor: 'not-allowed' } : undefined}>
             CALCULATE
           </button>
         </section>

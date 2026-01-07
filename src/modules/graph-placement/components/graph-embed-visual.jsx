@@ -103,6 +103,21 @@ export default function GraphEmbedVisual({
     return Number.isFinite(sim) ? sim : null;
   }
 
+  // -----------------------------------------------------------------------
+  // Remaining CPU (available) for a provider node.
+  // If the placement node exists we show its `availableCpu`,
+  // otherwise we fall back to the full capacity (i.e. the node is completely free).
+  // -----------------------------------------------------------------------
+  function remainingCpu(letter) {
+    const node = placementByLetter[letter];
+    const cap = PROVIDER_CAPACITY[letter];
+    if (!cap) return null;
+    // `availableCpu` may be undefined → treat as full capacity
+    const avail = node?.availableCpu ?? cap.cpu;
+    // Show only when the node is actually placed (otherwise the UI already looks empty)
+    return node ? Math.max(0, Math.round(avail)) : null;
+  }
+
   return (
     <svg className={styles.svg} viewBox='0 0 750 420'>
       {/* Titles */}
@@ -147,10 +162,10 @@ export default function GraphEmbedVisual({
         const mem = nonNegative(n.memory);
 
         function serviceFill(id) {
-          if (id.includes('frontend')) return '#60a5fa'; // μπλε
-          if (id.includes('backend')) return '#34d399'; // πράσινο
-          if (id.includes('database')) return '#f87171'; // κόκκινο
-          return '#94a3b8'; // fallback
+          if (id.includes('frontend')) return '#60a5fa';
+          if (id.includes('backend')) return '#34d399';
+          if (id.includes('database')) return '#f87171';
+          return '#94a3b8';
         }
 
         return (
@@ -213,17 +228,28 @@ export default function GraphEmbedVisual({
         const p = PROVIDER_POS[letter];
         const fill = providerFill(letter);
         const sim = getCosSim(letter);
+        const remCpu = remainingCpu(letter);
 
         return (
           <g key={letter}>
-            {/* similarity πάνω από node */}
+            {/* Draw the circle first so later text appears on top */}
+            <circle cx={p.x} cy={p.y} r='26' fill={fill} className={styles.providerNode} />
+
+            {/* similarity label – stays just above the circle */}
             {sim !== null && (
               <text x={p.x} y={p.y - 34} textAnchor='middle' className={styles.simText}>
                 Sim: {sim.toFixed(3)}
               </text>
             )}
 
-            <circle cx={p.x} cy={p.y} r='26' fill={fill} className={styles.providerNode} />
+            {/* remaining CPU label – placed a bit higher so it isn’t hidden */}
+            {remCpu !== null && (
+              <text x={p.x} y={p.y - 44} textAnchor='middle' className={styles.remCpuText}>
+                CPU: {remCpu}
+              </text>
+            )}
+
+            {/* Letter inside the node */}
             <text x={p.x} y={p.y + 6} textAnchor='middle' className={styles.nodeTextDark}>
               {letter}
             </text>

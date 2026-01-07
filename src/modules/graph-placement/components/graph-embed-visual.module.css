@@ -1,101 +1,127 @@
+/* --------------------------------------------------------------------
+   graph-embed-visual.module.css
+   ------------------------------------------------------------------- */
+
+/* SVG container */
 .svg {
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
+/* --------------------------------------------------------------------
+   Titles
+   -------------------------------------------------------------------- */
 .title {
-  font-weight: 700;
-  fill: #334155;
-  text-anchor: middle;
   font-size: 14px;
-}
-
-.serviceLine {
-  stroke: #94a3b8;
-  stroke-width: 2;
-  stroke-dasharray: 5 5;
-}
-
-.providerLine {
-  stroke: #cbd5e1;
-  stroke-width: 3;
-}
-
-
-
-.providerNode {
-  stroke: #ffffff;
-  stroke-width: 3;
-}
-
-.nodeTextWhite {
-  fill: white;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.nodeTextDark {
-  fill: #1e293b;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.infoBox {
-  fill: white;
-  stroke: #e2e8f0;
-}
-
-.infoText {
-  fill: #64748b;
-  font-size: 11px;
   font-weight: 600;
+  fill: #111827;
+}
+
+/* --------------------------------------------------------------------
+   Service graph – nodes, edges, badges, etc.
+   -------------------------------------------------------------------- */
+.serviceLine {
+  stroke: #9ca3af;
+  stroke-width: 2;
+  stroke-dasharray: 4 2;
+}
+
+.serviceNode {
+  stroke: #374151;
+  stroke-width: 1.5;
 }
 
 .edgeBadge {
-  fill: white;
-  stroke: #e2e8f0;
+  fill: #f3f4f6;
+  stroke: #d1d5db;
+  stroke-width: 1;
 }
 
 .edgeBadgeText {
-  fill: #64748b;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10px;
+  fill: #111827;
 }
 
-.remText {
-  fill: #059669;
-  font-size: 11px;
-  font-weight: 700;
+/* Info box that appears to the right of a service node */
+.infoBox {
+  fill: #e5e7eb;
+  stroke: #d1d5db;
+  stroke-width: 1;
 }
 
-.simText {
-  fill: #7e22ce;
-  font-size: 11px;
-  font-weight: 700;
+/* Text inside the info box */
+.infoText {
+  font-size: 10px;
+  fill: #111827;
 }
 
-/* BW Input */
+/* --------------------------------------------------------------------
+   Provider network – nodes, edges, bandwidth inputs, etc.
+   -------------------------------------------------------------------- */
+.providerLine {
+  stroke: #64748b;
+  stroke-width: 2;
+  stroke-dasharray: 2 2;
+}
+
+.providerNode {
+  stroke: #374151;
+  stroke-width: 1.5;
+}
+
+/* Bandwidth input (the little number box on each edge) */
 .bwInput {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: white;
+  width: 30px;
+  height: 22px;
+  font-size: 12px;
   text-align: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: #ef4444;
-  outline: none;
-  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
 }
 
-/* remove spinners */
-.bwInput::-webkit-outer-spin-button,
-.bwInput::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+/* Remaining bandwidth text (shown below the input) */
+.remText {
+  font-size: 10px;
+  fill: #6b7280;
 }
 
-.bwInput[type='number'] {
-  appearance: textfield;
-  -moz-appearance: textfield;
+/* --------------------------------------------------------------------
+   Text styles used throughout the SVG
+   -------------------------------------------------------------------- */
+.nodeTextWhite {
+  font-size: 12px;
+  fill: #ffffff;
+  font-weight: 600;
 }
+
+.nodeTextDark {
+  font-size: 12px;
+  fill: #111827;
+  font-weight: 600;
+}
+
+/* Cosine‑similarity label that appears above a provider node */
+.simText {
+  font-size: 10px;
+  fill: #6b7280; /* gray‑600 */
+}
+
+/* --------------------------------------------------------------------
+   NEW – Remaining CPU label (just below the similarity label)
+   -------------------------------------------------------------------- */
+.remCpuText {
+  font-size: 10px;
+  fill: #111827; /* almost black – stands out a bit */
+}
+
+/* --------------------------------------------------------------------
+   Miscellaneous / utility classes (if you have any)
+   -------------------------------------------------------------------- */
+
+/* Example: a generic container for the whole visual (you may already have this) */
+.container {
+  padding: 12px;
+  background: #f9fafb;
+}
+
+/* Add any other custom classes you already defined below this line */
