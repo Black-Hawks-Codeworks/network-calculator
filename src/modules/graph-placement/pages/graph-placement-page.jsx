@@ -53,7 +53,7 @@ export default function GraphPlacementPage() {
     { from: 'backend-vm-1', to: 'database-vm-1', bw: toNumber(values.bwBeDb) },
   ];
 
-  // 4) elegxw-yparxei estw ena input? 
+  // 4) elegxw-yparxei estw ena input?
   const hasAnyInput =
     toNumber(values.frontendCpu) > 0 ||
     toNumber(values.frontendMemory) > 0 ||
@@ -64,7 +64,6 @@ export default function GraphPlacementPage() {
 
   return (
     <div className={styles.page}>
-      
       <section className={styles.descriptionBox}>
         <h2 className={styles.title}>Graph-Based Network Calculator</h2>
         <p className={styles.text}>
