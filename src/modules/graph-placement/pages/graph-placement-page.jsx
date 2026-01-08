@@ -1,20 +1,18 @@
 import useGraphPlacement from '../hooks/useGraphPlacement';
 import styles from './graph-placement-page.module.css';
 
-// Το component του γραφήματος (δεξιά)
 import GraphEmbedVisual from '../components/graph-embed-visual';
 
-// Επαναχρησιμοποιούμε το CalculatorInput που ήδη έχεις από resource-calc
 import CalculatorInput from '../../resource-calc/components/calculator-input';
 
-// Helper: μετατρέπει string -> number (αν δεν γίνεται, 0)
+// metatrepei ta string se number (an dn ginetai, 0)
 function toNumber(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
 }
 
 export default function GraphPlacementPage() {
-  // 1) Παίρνουμε state/handlers από το νέο hook
+  // 1) pairnw state/handlers apo to neo hook
   const hook = useGraphPlacement();
 
   const values = hook.values;
@@ -27,7 +25,7 @@ export default function GraphPlacementPage() {
 
   const error = hook.error;
 
-  // 2) Service nodes (αριστερά) - εμφανίζονται μόνο αν CPU & RAM > 0
+  // 2) Service nodes emfanizontai mono an CPU & RAM > 0
   const serviceNodes = [
     {
       id: 'frontend-vm-1',
@@ -49,14 +47,13 @@ export default function GraphPlacementPage() {
     },
   ].filter((n) => n.cpu > 0 && n.memory > 0);
 
-  // 3) Service edges (απαιτούμενο BW)
+  // 3) Service edges (apaitoumeno BW)
   const serviceEdges = [
     { from: 'frontend-vm-1', to: 'backend-vm-1', bw: toNumber(values.bwFeBe) },
     { from: 'backend-vm-1', to: 'database-vm-1', bw: toNumber(values.bwBeDb) },
   ];
 
-  // 4) Απλός έλεγχος: υπάρχει έστω ένα input;
-  // (Για να μην πατιέται το calculate άδικα)
+  // 4) elegxw-yparxei estw ena input? 
   const hasAnyInput =
     toNumber(values.frontendCpu) > 0 ||
     toNumber(values.frontendMemory) > 0 ||
@@ -67,7 +64,7 @@ export default function GraphPlacementPage() {
 
   return (
     <div className={styles.page}>
-      {/* ΠΕΡΙΓΡΑΦΗ */}
+      
       <section className={styles.descriptionBox}>
         <h2 className={styles.title}>Graph-Based Network Calculator</h2>
         <p className={styles.text}>
@@ -80,13 +77,13 @@ export default function GraphPlacementPage() {
         </p>
       </section>
 
-      {/* FORM + GRAPH */}
+      {/* forma k grafos */}
       <div className={styles.contentRow}>
-        {/* FORM */}
+        {/* forma */}
         <section className={styles.formCard}>
           <h2 className={styles.formTitle}>Available Resources : CPU = 20, RAM = 32</h2>
 
-          {/* Error μήνυμα */}
+          {/* Error minima */}
           {error && (
             <div
               style={{
@@ -142,7 +139,7 @@ export default function GraphPlacementPage() {
           </button>
         </section>
 
-        {/* GRAPH */}
+        {/* grafos*/}
         <section className={styles.graphCard}>
           <h2 className={styles.graphTitle}>Graph Visualization</h2>
 

@@ -1,13 +1,8 @@
-// =====================================
-// buildPlacementGraph.js
-// =====================================
-// - Placement για FE/BE/DB στους providers K/L/M/N/O/P
+// - Placement gia FE/BE/DB stous providers K/L/M/N/O/P
 // - Constraints: CPU/RAM + cumulative BW (bidirected)
-// - Rule: 1 VM ανά provider (δηλ. FE/BE/DB δεν μπαίνουν στον ίδιο κόμβο)
-//
-// ESLint complexity: έχουμε σπάσει τη λογική σε helpers
-// ώστε η buildPlacementGraph να είναι "ελαφριά".
-// =====================================
+// - Rule: 1 VM ana provider (na min mpainoun panw apo ena VM se idio provider)
+
+
 
 import { Graph } from '@/shared/utils/graphs';
 import { cosineSimilarity } from '@/shared/utils/cos-similarity';
@@ -28,17 +23,15 @@ const PROVIDER_EDGES = [
 const PROVIDER_CAPACITY = {
   K: { cpu: 20, memory: 32 },
   L: { cpu: 20, memory: 32 },
-  M: { cpu: 6, memory: 32 },
+  M: { cpu: 20, memory: 32 },
   N: { cpu: 20, memory: 32 },
-  O: { cpu: 8, memory: 32 },
-  P: { cpu: 4, memory: 32 },
+  O: { cpu: 20, memory: 32 },
+  P: { cpu: 20, memory: 32 },
 };
 
 const LETTER_TO_NODE_ID = { K: 1, L: 2, M: 3, N: 4, O: 5, P: 6 };
 
-// -----------------------------
 // Graph helpers
-// -----------------------------
 function buildProviderGraph(providerBw) {
   const bw = providerBw || {};
   const g = new Graph();
@@ -47,7 +40,7 @@ function buildProviderGraph(providerBw) {
 
   PROVIDER_EDGES.forEach(([a, b]) => {
     const val = Number(bw[`${a}-${b}`]) || 0;
-    g.addEdge(a, b, val); // undirected (και τις 2 κατευθύνσεις)
+    g.addEdge(a, b, val); // undirected (kai tis 2 kateythinseis)
   });
 
   return g;
@@ -70,9 +63,8 @@ function getMaxLinkBw(graph) {
   return max;
 }
 
-// -----------------------------
 // Services helpers
-// -----------------------------
+
 function pickServices(services) {
   const list = Array.isArray(services) ? services : [];
   return {
@@ -88,24 +80,21 @@ function normalizeBw(val) {
   return Number.isFinite(n) ? n : 0;
 }
 
-// -----------------------------
-// Constraint: 1 VM ανά provider
-// (μόνο για services που υπάρχουν)
-// -----------------------------
+// Constraint: 1 VM ana provider
+// (mono gia services pou yparxoun)
 function isOneVmPerProviderOk({ fe, be, db }, i, j, k) {
-  // Μαζεύουμε μόνο τα letters που αντιστοιχούν σε υπάρχοντα services
+  // mazevw mono ta grammata pou antistoixoun se yparxonta services
   const chosen = [];
   if (fe) chosen.push(i);
   if (be) chosen.push(j);
   if (db) chosen.push(k);
 
-  // Αν δύο letters είναι ίδια => 2 services στον ίδιο provider => όχι
+  // an 2 grammata einai idia => 2 services ston idio provider => oxi
   return new Set(chosen).size === chosen.length;
 }
 
-// -----------------------------
-// CPU/RAM usage και check
-// -----------------------------
+// CPU/RAM usage kai check
+
 function buildUsageMap() {
   const usage = {};
   PROVIDERS.forEach((p) => {
@@ -130,9 +119,7 @@ function isResourceOk(usage) {
   return ok;
 }
 
-// -----------------------------
-// BW cumulative check
-// -----------------------------
+// BW athroistiko check
 function initDirectedUsage() {
   const usage = {};
   PROVIDER_EDGES.forEach(([a, b]) => {
@@ -190,9 +177,7 @@ function calcRemainingBw(graph, assignment, bwFeBe, bwBeDb) {
   return remaining;
 }
 
-// -----------------------------
 // Assignment helper
-// -----------------------------
 function buildAssignment({ fe, be, db }, i, j, k) {
   const a = {};
   if (fe) a[fe.id] = i;
@@ -201,9 +186,7 @@ function buildAssignment({ fe, be, db }, i, j, k) {
   return a;
 }
 
-// -----------------------------
-// Output nodes για UI
-// -----------------------------
+// Output nodes 
 function buildOutputNodes(servicesList, assignment) {
   return PROVIDERS.map((letter) => {
     const nodeId = LETTER_TO_NODE_ID[letter];
@@ -230,9 +213,7 @@ function buildOutputNodes(servicesList, assignment) {
   });
 }
 
-// =====================================
 // MAIN
-// =====================================
 export function buildPlacementGraph({ services, bwFeBe, bwBeDb, providerBw }) {
   const { list, fe, be, db } = pickServices(services);
 
@@ -242,7 +223,7 @@ export function buildPlacementGraph({ services, bwFeBe, bwBeDb, providerBw }) {
   const g = buildProviderGraph(providerBw);
   const maxLink = getMaxLinkBw(g);
 
-  // Γρήγορο pre-check για BW
+  // check gia BW
   if (reqFeBe > 0 && reqFeBe > maxLink) {
     return { ok: false, error: `Το BW FE→BE (${reqFeBe}) είναι > από max link (${maxLink}).` };
   }
@@ -256,7 +237,7 @@ export function buildPlacementGraph({ services, bwFeBe, bwBeDb, providerBw }) {
   for (const i of PROVIDERS) {
     for (const j of PROVIDERS) {
       for (const k of PROVIDERS) {
-        // 1) 1 VM per provider
+        // 1) 1 VM ana provider
         if (!isOneVmPerProviderOk({ fe, be, db }, i, j, k)) continue;
 
         // 2) assignment
@@ -269,7 +250,7 @@ export function buildPlacementGraph({ services, bwFeBe, bwBeDb, providerBw }) {
         addServiceUsage(usage, k, db);
         if (!isResourceOk(usage)) continue;
 
-        // 4) BW cumulative check
+        // 4) BW athroistiko check
         if (!isBwFeasibleCumulative(g, assignment, reqFeBe, reqBeDb)) continue;
 
         finalAssignment = assignment;

@@ -1,10 +1,6 @@
-// =====================================
-// normalizeInputs.js
-// =====================================
-// 1) Διαβάζουμε inputs (strings -> numbers)
-// 2) Validation (κανόνες)
-// 3) Επιστρέφουμε είτε error είτε καθαρά δεδομένα
-// =====================================
+//  strings -> numbers
+//  Validation kanones
+//  epistrefw error eite kathara dedomena
 
 function toNumberOrZero(value) {
   const n = Number(value);
@@ -16,12 +12,11 @@ function hasNegative(valuesObj) {
   return Object.values(valuesObj).some((v) => Number.isFinite(v) && v < 0);
 }
 
-// Μέγιστα διαθέσιμα resources σε ΟΛΟ το provider δίκτυο
-// (τα πήραμε από τα PROVIDER_CAPACITY που χρησιμοποιείς)
+//  diathesima resources se olo to diktio
 const MAX_PROVIDER_CPU = 20;
 const MAX_PROVIDER_RAM = 32;
 
-// Helper: φτιάχνει πιο κατανοητό μήνυμα
+// Helper:ftiaxnei pio katanohto minima
 function serviceName(role) {
   if (role === 'frontend') return 'Frontend';
   if (role === 'backend') return 'Backend';
@@ -30,7 +25,7 @@ function serviceName(role) {
 }
 
 export function normalizeInputs(values) {
-  // 1) Διαβάζουμε αριθμούς
+  // 1) diavazei tous ari8mous
   const feCpu = toNumberOrZero(values.frontendCpu);
   const feMem = toNumberOrZero(values.frontendMemory);
 
@@ -43,18 +38,18 @@ export function normalizeInputs(values) {
   const bwFeBe = toNumberOrZero(values.bwFeBe);
   const bwBeDb = toNumberOrZero(values.bwBeDb);
 
-  // 2) Δεν επιτρέπονται αρνητικά
+  // 2) den epitrepo ta arnhtika
   const allNumbers = { feCpu, feMem, beCpu, beMem, dbCpu, dbMem, bwFeBe, bwBeDb };
   if (hasNegative(allNumbers)) {
     return { error: 'Δεν επιτρέπονται αρνητικές τιμές (CPU/RAM/BW πρέπει να είναι >= 0).' };
   }
 
-  // 3) Φτιάχνουμε services
+  // 3) ftiaxnw services
   const fe = { id: 'frontend-vm-1', role: 'frontend', cpu: feCpu, mem: feMem };
   const be = { id: 'backend-vm-1', role: 'backend', cpu: beCpu, mem: beMem };
   const db = { id: 'database-vm-1', role: 'database', cpu: dbCpu, mem: dbMem };
 
-  // 4) Αν είναι όλα 0
+  // 4) an einai ola 0
   const totalCpu = fe.cpu + be.cpu + db.cpu;
   const totalMem = fe.mem + be.mem + db.mem;
 
@@ -62,7 +57,7 @@ export function normalizeInputs(values) {
     return { error: 'Βάλε CPU και RAM σε τουλάχιστον ένα service πριν πατήσεις CALCULATE.' };
   }
 
-  // 5) CPU & RAM μαζί
+  // 5) CPU & RAM 
   const fePartial = (fe.cpu > 0) !== (fe.mem > 0);
   const bePartial = (be.cpu > 0) !== (be.mem > 0);
   const dbPartial = (db.cpu > 0) !== (db.mem > 0);
@@ -73,8 +68,7 @@ export function normalizeInputs(values) {
     };
   }
 
-  // 6) ✅ ΝΕΟΣ ΚΑΝΟΝΑΣ: κάθε service πρέπει να χωράει ΜΟΝΟ του σε κάποιο provider
-  // (αν CPU > 20 ή RAM > 32, δεν υπάρχει λύση από πριν)
+  // 6) kathe service prp na xwraei mono tou se kapoio provider 
   const services = [fe, be, db].filter((s) => s.cpu > 0 && s.mem > 0);
 
   for (const s of services) {
@@ -90,7 +84,7 @@ export function normalizeInputs(values) {
     }
   }
 
-  // 7) ΟΚ
+  //  ΟΚ
   return {
     data: {
       fe,

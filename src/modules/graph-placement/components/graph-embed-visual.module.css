@@ -1,25 +1,16 @@
-/* --------------------------------------------------------------------
-   graph-embed-visual.module.css
-   ------------------------------------------------------------------- */
 
-/* SVG container */
 .svg {
   width: 100%;
   height: auto;
 }
 
-/* --------------------------------------------------------------------
-   Titles
-   -------------------------------------------------------------------- */
 .title {
   font-size: 14px;
   font-weight: 600;
   fill: #111827;
 }
 
-/* --------------------------------------------------------------------
-   Service graph – nodes, edges, badges, etc.
-   -------------------------------------------------------------------- */
+
 .serviceLine {
   stroke: #9ca3af;
   stroke-width: 2;
@@ -42,22 +33,19 @@
   fill: #111827;
 }
 
-/* Info box that appears to the right of a service node */
+
 .infoBox {
   fill: #e5e7eb;
   stroke: #d1d5db;
   stroke-width: 1;
 }
 
-/* Text inside the info box */
+
 .infoText {
   font-size: 10px;
   fill: #111827;
 }
 
-/* --------------------------------------------------------------------
-   Provider network – nodes, edges, bandwidth inputs, etc.
-   -------------------------------------------------------------------- */
 .providerLine {
   stroke: #64748b;
   stroke-width: 2;
@@ -69,7 +57,7 @@
   stroke-width: 1.5;
 }
 
-/* Bandwidth input (the little number box on each edge) */
+/* Bandwidth input */
 .bwInput {
   width: 30px;
   height: 22px;
@@ -79,15 +67,13 @@
   border-radius: 3px;
 }
 
-/* Remaining bandwidth text (shown below the input) */
+/* Remaining bandwidth */
 .remText {
   font-size: 10px;
   fill: #6b7280;
 }
 
-/* --------------------------------------------------------------------
-   Text styles used throughout the SVG
-   -------------------------------------------------------------------- */
+/* Text styles gia to SVG */
 .nodeTextWhite {
   font-size: 12px;
   fill: #ffffff;
@@ -100,28 +86,24 @@
   font-weight: 600;
 }
 
-/* Cosine‑similarity label that appears above a provider node */
+/* Cosine‑similarity panw apo ta nodes */
 .simText {
   font-size: 10px;
-  fill: #6b7280; /* gray‑600 */
+  fill: #6b7280; 
 }
 
-/* --------------------------------------------------------------------
-   NEW – Remaining CPU label (just below the similarity label)
-   -------------------------------------------------------------------- */
+/*  Remaining CPU sta nodes */
 .remCpuText {
   font-size: 10px;
-  fill: #111827; /* almost black – stands out a bit */
+  fill: #111827; 
 }
 
-/* --------------------------------------------------------------------
-   Miscellaneous / utility classes (if you have any)
-   -------------------------------------------------------------------- */
 
-/* Example: a generic container for the whole visual (you may already have this) */
+
+
 .container {
   padding: 12px;
   background: #f9fafb;
 }
 
-/* Add any other custom classes you already defined below this line */
+

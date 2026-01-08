@@ -2,14 +2,14 @@ import React, { useMemo } from 'react';
 import styles from './graph-embed-visual.module.css';
 import { cosineSimilarity } from '@/shared/utils/cos-similarity';
 
-// Θέσεις service nodes (αριστερά)
+// theseis service nodes aristera 
 const SERVICE_POS = {
   'frontend-vm-1': { x: 120, y: 120 },
   'backend-vm-1': { x: 120, y: 230 },
   'database-vm-1': { x: 120, y: 340 },
 };
 
-// Θέσεις provider nodes (δεξιά)
+// theseis provider nodes deksia
 const PROVIDER_POS = {
   K: { x: 380, y: 140 },
   L: { x: 500, y: 90 },
@@ -32,14 +32,14 @@ const PROVIDER_EDGES = [
 
 const LETTER_TO_NODE_ID = { K: 1, L: 2, M: 3, N: 4, O: 5, P: 6 };
 
-// Για cosine similarity: capacity ανά provider (RAM=32 παντού)
+// cosine similarity: capacity ανά provider (RAM=32 pantou)
 const PROVIDER_CAPACITY = {
   K: { cpu: 20, mem: 32 },
   L: { cpu: 20, mem: 32 },
-  M: { cpu: 6, mem: 32 },
+  M: { cpu: 20, mem: 32 },
   N: { cpu: 20, mem: 32 },
-  O: { cpu: 8, mem: 32 },
-  P: { cpu: 4, mem: 32 },
+  O: { cpu: 20, mem: 32 },
+  P: { cpu: 20, mem: 32 },
 };
 
 function toNumber(value) {
@@ -64,7 +64,7 @@ export default function GraphEmbedVisual({
   onProviderBwChange,
   providerEdgesRemaining = null,
 }) {
-  // Map: K/L/M... -> placement node
+  // Map: K/L/M -> placement node
   const placementByLetter = useMemo(() => {
     const map = {};
     Object.keys(PROVIDER_POS).forEach((letter) => {
@@ -74,7 +74,7 @@ export default function GraphEmbedVisual({
     return map;
   }, [placementNodes]);
 
-  // Χρώμα provider node ανάλογα με roles
+  // xrwmata provider node 
   function providerFill(letter) {
     const node = placementByLetter[letter];
     const roles = (node?.vms || []).map((v) => v.role);
@@ -85,7 +85,7 @@ export default function GraphEmbedVisual({
     return '#e2e8f0';
   }
 
-  // Cosine similarity (με βάση USED vs CAPACITY)
+  // Cosine similarity 
   function getCosSim(letter) {
     const node = placementByLetter[letter];
     if (!node) return null;
@@ -96,25 +96,22 @@ export default function GraphEmbedVisual({
     const usedCpu = cap.cpu - (node.availableCpu ?? cap.cpu);
     const usedMem = cap.mem - (node.availableMemory ?? cap.mem);
 
-    // Αν δεν έχει τίποτα το node, δείξε null (να μη γεμίζει το UI)
+    // an dn exei tpt to node, deikse null (ara dn gemizei tpt to UI)
     if (usedCpu <= 0 && usedMem <= 0) return null;
 
     const sim = cosineSimilarity([usedCpu, usedMem], [cap.cpu, cap.mem]);
     return Number.isFinite(sim) ? sim : null;
   }
 
-  // -----------------------------------------------------------------------
-  // Remaining CPU (available) for a provider node.
-  // If the placement node exists we show its `availableCpu`,
-  // otherwise we fall back to the full capacity (i.e. the node is completely free).
-  // -----------------------------------------------------------------------
+  // Remaining CPU available gia provider node.
+  // an to placement ginei, deixnw to availableCpu
   function remainingCpu(letter) {
     const node = placementByLetter[letter];
     const cap = PROVIDER_CAPACITY[letter];
     if (!cap) return null;
-    // `availableCpu` may be undefined → treat as full capacity
+  
     const avail = node?.availableCpu ?? cap.cpu;
-    // Show only when the node is actually placed (otherwise the UI already looks empty)
+  
     return node ? Math.max(0, Math.round(avail)) : null;
   }
 
@@ -128,7 +125,7 @@ export default function GraphEmbedVisual({
         Provider Network
       </text>
 
-      {/* ===== Service edges ===== */}
+      {/* Service edges */}
       {serviceEdges.map((e) => {
         const p1 = SERVICE_POS[e.from];
         const p2 = SERVICE_POS[e.to];
@@ -153,7 +150,7 @@ export default function GraphEmbedVisual({
         );
       })}
 
-      {/* ===== Service nodes ===== */}
+      {/* Service nodes  */}
       {serviceNodes.map((n) => {
         const p = SERVICE_POS[n.id];
         if (!p) return null;
@@ -184,7 +181,7 @@ export default function GraphEmbedVisual({
         );
       })}
 
-      {/* ===== Provider edges ===== */}
+      {/* Provider edges */}
       {PROVIDER_EDGES.map(([from, to]) => {
         const p1 = PROVIDER_POS[from];
         const p2 = PROVIDER_POS[to];
@@ -223,7 +220,7 @@ export default function GraphEmbedVisual({
         );
       })}
 
-      {/* ===== Provider nodes (με cosine similarity) ===== */}
+      {/* Provider nodes (me cosine similarity) */}
       {Object.keys(PROVIDER_POS).map((letter) => {
         const p = PROVIDER_POS[letter];
         const fill = providerFill(letter);
@@ -232,24 +229,24 @@ export default function GraphEmbedVisual({
 
         return (
           <g key={letter}>
-            {/* Draw the circle first so later text appears on top */}
+            {/* ta kyklakia*/}
             <circle cx={p.x} cy={p.y} r='26' fill={fill} className={styles.providerNode} />
 
-            {/* similarity label – stays just above the circle */}
+            {/* similarity */}
             {sim !== null && (
               <text x={p.x} y={p.y - 34} textAnchor='middle' className={styles.simText}>
                 Sim: {sim.toFixed(3)}
               </text>
             )}
 
-            {/* remaining CPU label – placed a bit higher so it isn’t hidden */}
+            {/* remaining CPU */}
             {remCpu !== null && (
               <text x={p.x} y={p.y - 44} textAnchor='middle' className={styles.remCpuText}>
                 CPU: {remCpu}
               </text>
             )}
 
-            {/* Letter inside the node */}
+            {/* To gramma mesa sto node */}
             <text x={p.x} y={p.y + 6} textAnchor='middle' className={styles.nodeTextDark}>
               {letter}
             </text>

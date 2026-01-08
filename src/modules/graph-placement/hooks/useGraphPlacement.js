@@ -1,16 +1,14 @@
 import { useState } from 'react';
 
-// 1) Παίρνουμε τη συνάρτηση που καθαρίζει/ελέγχει τα inputs
+
 import { normalizeInputs } from '../utils/normalizeInputs';
 
-// 2) Παίρνουμε τη συνάρτηση που υπολογίζει placement
+
 import { buildPlacementGraph } from '../services/buildPlacementGraph';
 
-/**
- * =====================================
- * DEFAULT PROVIDER BW (κόκκινα edges)
- * =====================================
- * Είναι bidirected: κρατάμε και τις 2 κατευθύνσεις (K-L και L-K)
+/*
+ * DEFAULT PROVIDER BW 
+ * krataw kai tis  2 kateythinseis (K-L kai L-K)
  */
 const DEFAULT_PROVIDER_BW = {
   'K-L': 6,
@@ -32,29 +30,22 @@ const DEFAULT_PROVIDER_BW = {
 };
 
 /**
- * =====================================
  * useGraphPlacement (HOOK)
- * =====================================
- * Αυτό το hook κρατάει:
- * - inputs (values)
- * - διαθέσιμο bandwidth provider edges (providerBw)
- * - placement αποτέλεσμα (placement)
- * - error message (error)
+ * Αυτό το hook krataei:
+ *  inputs 
+ *  diathesimo bandwidth provider edges (providerBw)
+ *  placement apotelesma
+ *  error message 
  *
- * Και παρέχει handlers:
- * - handleChange
- * - handleProviderBwChange
- * - handleCalculate
+ * kai handlers:
+ *  handleChange
+ *  handleProviderBwChange
+ *  handleCalculate
  */
 export default function useGraphPlacement() {
-  // =========================
   // 1) State: Provider BW
-  // =========================
   const [providerBw, setProviderBw] = useState(DEFAULT_PROVIDER_BW);
-
-  // =========================
-  // 2) State: Inputs (strings)
-  // =========================
+  // 2) State: Inputs 
   const [values, setValues] = useState({
     frontendCpu: '',
     frontendMemory: '',
@@ -66,36 +57,30 @@ export default function useGraphPlacement() {
     bwBeDb: '',
   });
 
-  // =========================
   // 3) State: Placement result
-  // =========================
+  
   const [placement, setPlacement] = useState({
     nodes: [],
     edges: { feToBe: 0, beToDb: 0 },
     providerEdgesRemaining: null,
   });
 
-  // =========================
   // 4) State: Error message
-  // =========================
   const [error, setError] = useState(null);
 
-  // =========================
   // 5) Handler: form inputs
-  // =========================
   const handleChange = (e) => {
     const { id, value } = e.target;
     setValues((prev) => ({ ...prev, [id]: value }));
   };
 
-  // =========================
-  // 6) Handler: provider BW input (στο γράφημα)
-  // =========================
+  // 6) Handler: provider BW input sto grafima 
+
   const handleProviderBwChange = (from, to, val) => {
-    // Προστασία: δεν θέλουμε αρνητικά
+    // apotrepei ta arntika 
     const num = Math.max(0, Number(val) || 0);
 
-    // Bidirected: αλλάζουμε και τις 2 κατευθύνσεις
+    // Bidirected-allazw kai tis 2 kateythinseis 
     setProviderBw((prev) => ({
       ...prev,
       [`${from}-${to}`]: num,
@@ -103,15 +88,13 @@ export default function useGraphPlacement() {
     }));
   };
 
-  // =========================
   // 7) Handler: CALCULATE
-  // =========================
   const handleCalculate = () => {
-    // Καθαρίζουμε προηγούμενο error
+    // katharizo prohgoumeno error
     setError(null);
 
-    // 7a) Normalize + validation inputs
-    // Επιστρέφει είτε { error } είτε { data }
+    // 7a) Normalize k validation inputs
+    // epistrefei eite { error } eite { data }
     const normalized = normalizeInputs(values);
 
     if (normalized.error) {
@@ -121,14 +104,14 @@ export default function useGraphPlacement() {
 
     const { fe, be, db, bwFeBe, bwBeDb } = normalized.data;
 
-    // 7b) Φτιάχνουμε λίστα services (μόνο όσα "υπάρχουν")
-    // Ένα service "υπάρχει" όταν CPU & RAM > 0
+    // 7b) ftiaxnw lista services (mono osa yparxoun)
+    // ena service "yparxei" otan CPU & RAM > 0
     const services = [];
     if (fe.cpu > 0 && fe.mem > 0) services.push(fe);
     if (be.cpu > 0 && be.mem > 0) services.push(be);
     if (db.cpu > 0 && db.mem > 0) services.push(db);
 
-    // 7c) Καλούμε τον algorithm service για placement
+    // 7c) kalo ton algorithm service gia placement
     const result = buildPlacementGraph({
       services,
       bwFeBe,
@@ -136,19 +119,18 @@ export default function useGraphPlacement() {
       providerBw,
     });
 
-    // 7d) Αν δεν βρέθηκε placement -> error
+    // 7d) an den vrethike placement dinei error
     if (!result.ok) {
       setError(result.error);
       return;
     }
 
-    // 7e) Αν βρέθηκε -> ενημερώνουμε το placement state
+    // 7e) an vrethike -> enimerwnw to placement state
     setPlacement(result.placement);
   };
 
-  // =========================
-  // 8) Επιστρέφουμε ό,τι χρειάζεται η σελίδα
-  // =========================
+
+  // 8) epistrefw oti xreiazetai h selida mou  
   return {
     values,
     handleChange,
